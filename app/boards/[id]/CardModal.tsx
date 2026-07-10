@@ -16,10 +16,16 @@ interface User {
   email: string;
 }
 
+interface CardUpdate {
+  title?: string;
+  description?: string;
+  assigneeId?: string;
+}
+
 interface CardModalProps {
   card: Card | null;
   onClose: () => void;
-  onSave: (updates: Partial<Card>) => Promise<void>;
+  onSave: (updates: CardUpdate) => Promise<void>;
   onDelete: () => Promise<void>;
   boardMembers: User[];
 }

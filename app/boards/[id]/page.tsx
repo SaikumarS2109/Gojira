@@ -172,7 +172,7 @@ export default function BoardDetailPage() {
     }
   };
 
-  const handleUpdateCard = async (updates: Partial<Card>) => {
+  const handleUpdateCard = async (updates: { title?: string; description?: string; assigneeId?: string }) => {
     if (!selectedCard) return;
 
     try {
@@ -243,12 +243,12 @@ export default function BoardDetailPage() {
     }
   };
 
-  const handleCardMove = async (cardId: string, newListId: string, newOrder: number) => {
+  const handleCardMove = async (cardId: string, newListId: string) => {
     try {
       await fetch(`/api/cards/${cardId}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ listId: newListId, order: newOrder }),
+        body: JSON.stringify({ listId: newListId }),
       });
     } catch (err) {
       console.error('Failed to move card:', err);
