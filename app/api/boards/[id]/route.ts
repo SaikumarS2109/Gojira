@@ -31,8 +31,8 @@ export async function DELETE(
     const lists = await List.find({ boardId: id });
     const listIds = lists.map((l) => l._id);
     await Card.deleteMany({ listId: { $in: listIds } });
-    await List.deleteMany({ boardId: params.id });
-    await Board.findByIdAndDelete(params.id);
+    await List.deleteMany({ boardId: id });
+    await Board.findByIdAndDelete(id);
 
     return NextResponse.json({ message: 'Board deleted' });
   } catch (error) {
