@@ -6,6 +6,16 @@ const boardSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    sequencePrefix: {
+      type: String,
+      required: true,
+      uppercase: true,
+      match: /^[A-Z]{2,8}$/,
+    },
+    nextTicketNumber: {
+      type: Number,
+      default: 1,
+    },
     ownerId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User',
@@ -20,5 +30,7 @@ const boardSchema = new mongoose.Schema(
   },
   { timestamps: true }
 );
+
+boardSchema.index({ sequencePrefix: 1 }, { unique: true });
 
 export const Board = mongoose.models.Board || mongoose.model('Board', boardSchema);
