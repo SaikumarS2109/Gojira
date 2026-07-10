@@ -34,16 +34,37 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { title } = body;
+    const { title, sequencePrefix } = body;
 
     if (!title) {
       return NextResponse.json({ error: 'Title is required' }, { status: 400 });
     }
 
+    if (!sequencePrefix) {
+      return NextResponse.json({ error: 'Sequence prefix is required' }, { status: 400 });
+    }
+
+    const prefix = String(sequencePrefix).toUpperCase().trim();
+    if (!/^[A-Z]{2,8}$/.test(prefix)) {
+      return NextResponse.json(
+        { error: 'Prefix must be 2–8 letters (A–Z only)' },
+        { status: 400 }
+      );
+    }
+
     await connectDB();
+
+    const existing = await Board.findOne({ sequencePrefix: prefix });
+    if (existing) {
+      return NextResponse.json(
+        { error: `Prefix "${prefix}" is already in use` },
+        { status: 409 }
+      );
+    }
 
     const board = await Board.create({
       title,
+      sequencePrefix: prefix,
       ownerId: session.user.id,
       memberIds: [session.user.id],
     });
