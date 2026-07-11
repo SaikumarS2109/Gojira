@@ -27,23 +27,24 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'List not found' }, { status: 404 });
     }
 
-    // Atomically claim the next ticket number (new: false → pre-increment value)
-    const boardBefore = await Board.findByIdAndUpdate(
-      list.boardId,
-      { $inc: { nextTicketNumber: 1 } },
-      { new: false }
-    );
-
-    if (!boardBefore) {
+    // Membership gate — read-only, before touching the counter
+    const board = await Board.findById(list.boardId);
+    if (!board) {
       return NextResponse.json({ error: 'Board not found' }, { status: 404 });
     }
-
-    const isMember = boardBefore.memberIds.some(
+    const isMember = board.memberIds.some(
       (id: any) => id.toString() === session.user.id
     );
     if (!isMember) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
+
+    // Atomically claim the next ticket number only after membership is confirmed
+    const boardBefore = await Board.findByIdAndUpdate(
+      list.boardId,
+      { $inc: { nextTicketNumber: 1 } },
+      { new: false }
+    );
 
     const maxOrder = await Card.findOne({ listId }).sort({ order: -1 });
     const newOrder = (maxOrder?.order ?? -1) + 1;
@@ -53,7 +54,7 @@ export async function POST(request: NextRequest) {
       title,
       description: description || '',
       order: newOrder,
-      ticketNumber: boardBefore.nextTicketNumber,
+      ticketNumber: boardBefore!.nextTicketNumber,
     });
 
     await card.populate('assigneeId', 'name email');

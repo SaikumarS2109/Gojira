@@ -73,7 +73,13 @@ export async function POST(request: NextRequest) {
     await board.populate('memberIds', 'name email');
 
     return NextResponse.json(board, { status: 201 });
-  } catch (error) {
+  } catch (error: any) {
+    if (error?.code === 11000) {
+      return NextResponse.json(
+        { error: 'Prefix is already in use' },
+        { status: 409 }
+      );
+    }
     console.error('Create board error:', error);
     return NextResponse.json({ error: 'Failed to create board' }, { status: 500 });
   }
