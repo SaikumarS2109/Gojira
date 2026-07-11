@@ -7,6 +7,7 @@ interface Card {
   title: string;
   description: string;
   listId: string;
+  ticketNumber?: number;
   assigneeId?: { _id: string; name: string; email: string };
 }
 
@@ -28,9 +29,10 @@ interface CardModalProps {
   onSave: (updates: CardUpdate) => Promise<void>;
   onDelete: () => Promise<void>;
   boardMembers: User[];
+  sequencePrefix: string;
 }
 
-export function CardModal({ card, onClose, onSave, onDelete, boardMembers }: CardModalProps) {
+export function CardModal({ card, onClose, onSave, onDelete, boardMembers, sequencePrefix }: CardModalProps) {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [assigneeId, setAssigneeId] = useState('');
@@ -45,6 +47,8 @@ export function CardModal({ card, onClose, onSave, onDelete, boardMembers }: Car
   }, [card]);
 
   if (!card) return null;
+
+  const ticketId = card.ticketNumber != null ? `${sequencePrefix}-${card.ticketNumber}` : null;
 
   const handleSave = async () => {
     setLoading(true);
@@ -74,9 +78,16 @@ export function CardModal({ card, onClose, onSave, onDelete, boardMembers }: Car
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" onClick={onClose}>
       <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-md" onClick={(e) => e.stopPropagation()}>
-        <div className="flex justify-between items-center mb-4">
-          <h2 className="text-xl font-semibold">Edit Card</h2>
-          <button onClick={onClose} className="text-gray-500 hover:text-gray-700">
+        <div className="flex justify-between items-start mb-4">
+          <div>
+            {ticketId && (
+              <span className="inline-block text-xs font-mono font-semibold text-blue-600 bg-blue-50 border border-blue-200 px-2 py-0.5 rounded mb-1">
+                {ticketId}
+              </span>
+            )}
+            <h2 className="text-xl font-semibold">Edit Card</h2>
+          </div>
+          <button onClick={onClose} className="text-gray-500 hover:text-gray-700 ml-4">
             ✕
           </button>
         </div>

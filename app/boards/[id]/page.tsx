@@ -18,6 +18,7 @@ interface User {
 interface Board {
   _id: string;
   title: string;
+  sequencePrefix?: string;
   memberIds?: User[];
   ownerId?: User;
 }
@@ -33,6 +34,7 @@ interface Card {
   title: string;
   description: string;
   listId: string;
+  ticketNumber?: number;
   assigneeId?: { _id: string; name: string; email: string };
 }
 
@@ -502,6 +504,7 @@ export default function BoardDetailPage() {
                         newCardTitle={newCardTitle}
                         onNewCardTitleChange={setNewCardTitle}
                         onCreateCard={handleCreateCard}
+                        sequencePrefix={board?.sequencePrefix || ''}
                       />
                     ))}
 
@@ -561,6 +564,7 @@ export default function BoardDetailPage() {
           onSave={handleUpdateCard}
           onDelete={handleDeleteCardFromModal}
           boardMembers={boardMembers}
+          sequencePrefix={board?.sequencePrefix || ''}
         />
       </div>
     </AuthGuard>
