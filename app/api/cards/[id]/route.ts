@@ -6,6 +6,39 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { NextRequest, NextResponse } from 'next/server';
 
+export async function GET(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    const session = await getServerSession(authOptions);
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    const { id } = await params;
+    await connectDB();
+
+    const card = await Card.findById(id);
+    if (!card) {
+      return NextResponse.json({ error: 'Card not found' }, { status: 404 });
+    }
+
+    const list = await List.findById(card.listId);
+    const board = await Board.findById(list?.boardId);
+    const isMember = board?.memberIds.some((mid: any) => mid.toString() === session.user.id);
+    if (!isMember) {
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+    }
+
+    await card.populate('assigneeId', 'name email');
+    return NextResponse.json(card);
+  } catch (error) {
+    console.error('Get card error:', error);
+    return NextResponse.json({ error: 'Failed to fetch card' }, { status: 500 });
+  }
+}
+
 export async function PATCH(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
