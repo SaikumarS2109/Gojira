@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 
 interface Card {
@@ -50,6 +50,8 @@ export function CardView({
   const [assigneeId, setAssigneeId] = useState(card.assigneeId?._id || '');
   const [saving, setSaving] = useState<string | null>(null);
   const [fieldError, setFieldError] = useState<string | null>(null);
+  const discardTitleRef = useRef(false);
+  const discardDescRef = useRef(false);
 
   // Sync local state when card prop changes (e.g. parent refreshes)
   useEffect(() => {
@@ -73,6 +75,7 @@ export function CardView({
   };
 
   const handleSaveTitle = async () => {
+    if (discardTitleRef.current) { discardTitleRef.current = false; return; }
     const trimmed = titleValue.trim();
     if (!trimmed) { setTitleValue(card.title); setEditingTitle(false); return; }
     if (trimmed === card.title) { setEditingTitle(false); return; }
@@ -81,6 +84,7 @@ export function CardView({
   };
 
   const handleSaveDescription = async () => {
+    if (discardDescRef.current) { discardDescRef.current = false; return; }
     if (descriptionValue === card.description) { setEditingDescription(false); return; }
     await saveField({ description: descriptionValue }, 'description');
     setEditingDescription(false);
@@ -115,7 +119,13 @@ export function CardView({
               onBlur={handleSaveTitle}
               onKeyDown={(e) => {
                 if (e.key === 'Enter') { e.preventDefault(); handleSaveTitle(); }
-                if (e.key === 'Escape') { setTitleValue(card.title); setEditingTitle(false); }
+                if (e.key === 'Escape') {
+                  e.stopPropagation();
+                  e.nativeEvent.stopImmediatePropagation();
+                  discardTitleRef.current = true;
+                  setTitleValue(card.title);
+                  setEditingTitle(false);
+                }
               }}
               className="flex-1 text-lg font-semibold text-gray-900 border-b-2 border-blue-400 focus:outline-none bg-transparent pb-0.5"
             />
@@ -173,6 +183,9 @@ export function CardView({
               onBlur={handleSaveDescription}
               onKeyDown={(e) => {
                 if (e.key === 'Escape') {
+                  e.stopPropagation();
+                  e.nativeEvent.stopImmediatePropagation();
+                  discardDescRef.current = true;
                   setDescriptionValue(card.description);
                   setEditingDescription(false);
                 }

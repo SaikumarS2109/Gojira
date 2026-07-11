@@ -224,14 +224,17 @@ export default function BoardDetailPage() {
           c._id === selectedCard._id ? updatedCard : c
         ),
       });
+      setSelectedCard(updatedCard);
     } catch (err) {
       console.error(err);
+      throw err;
     }
   };
 
   const handleDeleteCardFromModal = async () => {
     if (!selectedCard) return;
     await handleDeleteCard(selectedCard._id, selectedCard.listId);
+    setSelectedCard(null);
   };
 
   const handleAddMember = async (e: React.FormEvent) => {

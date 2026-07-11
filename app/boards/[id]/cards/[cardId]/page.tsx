@@ -110,7 +110,8 @@ export default function CardFullPage() {
   };
 
   const handleDelete = async () => {
-    await fetch(`/api/cards/${cardId}`, { method: 'DELETE' });
+    const res = await fetch(`/api/cards/${cardId}`, { method: 'DELETE' });
+    if (!res.ok) { setError('Failed to delete card'); return; }
     router.push(`/boards/${boardId}`);
   };
 
