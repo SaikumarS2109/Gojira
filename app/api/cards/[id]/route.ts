@@ -26,8 +26,7 @@ export async function GET(
 
     const list = await List.findById(card.listId);
     const board = await Board.findById(list?.boardId);
-    const isMember = board?.memberIds.some((mid: any) => mid.toString() === session.user.id);
-    if (!isMember) {
+    if (!board || !board.memberIds.some((mid: any) => mid.toString() === session.user.id)) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 
