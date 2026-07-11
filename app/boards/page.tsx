@@ -190,7 +190,7 @@ export default function BoardsPage() {
                     autoFocus
                     className="px-2 py-1 text-sm rounded border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
                     onKeyDown={(e) => {
-                      if (e.key === 'Escape') setShowForm(false);
+                      if (e.key === 'Escape') { setShowForm(false); setTitle(''); setBoardPrefix(''); }
                     }}
                   />
                   <input
