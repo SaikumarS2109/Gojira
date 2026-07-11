@@ -560,11 +560,12 @@ export default function BoardDetailPage() {
 
         <CardModal
           card={selectedCard}
-          onClose={() => setSelectedCard(null)}
-          onSave={handleUpdateCard}
-          onDelete={handleDeleteCardFromModal}
-          boardMembers={boardMembers}
+          boardId={boardId}
           sequencePrefix={board?.sequencePrefix || ''}
+          boardMembers={boardMembers}
+          onUpdate={handleUpdateCard}
+          onDelete={handleDeleteCardFromModal}
+          onClose={() => setSelectedCard(null)}
         />
       </div>
     </AuthGuard>
