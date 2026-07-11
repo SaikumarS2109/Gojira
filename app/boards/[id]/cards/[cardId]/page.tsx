@@ -226,10 +226,10 @@ export default function CardFullPage() {
           </aside>
 
           {/* Card content */}
-          <main className="flex-1 overflow-y-auto p-6">
-            {error && <p className="text-red-400 mb-4">{error}</p>}
+          <main className="flex-1 overflow-hidden flex flex-col">
+            {error && <p className="text-red-400 px-6 pt-4">{error}</p>}
             {card && board ? (
-              <div className="max-w-4xl mx-auto bg-white rounded-xl shadow-2xl p-6">
+              <div className="flex-1 bg-white overflow-y-auto p-8">
                 <CardView
                   card={card}
                   sequencePrefix={board.sequencePrefix || ''}
@@ -240,7 +240,7 @@ export default function CardFullPage() {
                 />
               </div>
             ) : (
-              !error && <p className="text-white/50">Card not found.</p>
+              !error && <p className="text-white/50 p-6">Card not found.</p>
             )}
           </main>
         </div>
