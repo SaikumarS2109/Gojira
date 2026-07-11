@@ -10,7 +10,7 @@ import {
   useSensor,
   useSensors,
 } from '@dnd-kit/core';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 interface Card {
   _id: string;
@@ -45,6 +45,11 @@ export function SimpleDragDrop({
 }: SimpleDragDropProps) {
   const [localCards, setLocalCards] = useState(cards);
   const [draggingCard, setDraggingCard] = useState<Card | null>(null);
+
+  // Sync localCards when external state changes (create, update, delete)
+  useEffect(() => {
+    setLocalCards(cards);
+  }, [cards]);
 
   const sensors = useSensors(
     useSensor(MouseSensor, { activationConstraint: { distance: 8 } }),
