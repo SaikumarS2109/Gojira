@@ -388,7 +388,11 @@ export default function BoardDetailPage() {
                     placeholder="Board name"
                     className="w-full px-2 py-1.5 text-sm rounded-lg bg-white/10 text-white placeholder-white/40 border border-white/20 focus:outline-none focus:border-white/50"
                     onKeyDown={(e) => {
-                      if (e.key === 'Escape') setShowNewBoardForm(false);
+                      if (e.key === 'Escape') {
+                        setShowNewBoardForm(false);
+                        setNewBoardTitle('');
+                        setNewBoardPrefix('');
+                      }
                     }}
                   />
                   <input
@@ -513,13 +517,16 @@ export default function BoardDetailPage() {
                             placeholder="Enter list name"
                             className="w-full px-3 py-2 text-sm rounded-lg bg-white text-gray-800 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400 mb-2"
                             onKeyDown={(e) => {
-                              if (e.key === 'Enter') handleCreateList(e as any);
-                              if (e.key === 'Escape') setShowAddList(false);
+                              if (e.key === 'Enter') handleCreateList(e as unknown as React.FormEvent);
+                              if (e.key === 'Escape') {
+                                setShowAddList(false);
+                                setNewListTitle('');
+                              }
                             }}
                           />
                           <div className="flex gap-2">
                             <button
-                              onClick={handleCreateList}
+                              onClick={(e) => handleCreateList(e as unknown as React.FormEvent)}
                               className="bg-blue-500 text-white px-3 py-1 text-sm rounded hover:bg-blue-600 transition"
                             >
                               Add list
