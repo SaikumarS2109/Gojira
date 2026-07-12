@@ -357,23 +357,18 @@ export function CardView({
           )}
 
           {/* Comments Section */}
-          <div className="mt-8">
-            <h3 className="text-sm font-semibold text-[#172B4D] mb-2">
-              Comments
-            </h3>
+          <div className="mt-8 space-y-3">
             <CommentEditor
               cardId={card._id}
               boardMembers={boardMembers}
               onCommentCreated={() => setCommentsRefresh(prev => prev + 1)}
             />
-            <div className="mt-4">
-              <CommentList
-                key={commentsRefresh}
-                cardId={card._id}
-                currentUserId={card.assigneeId?._id || ''}
-                onCommentDeleted={() => setCommentsRefresh(prev => prev + 1)}
-              />
-            </div>
+            <CommentList
+              key={commentsRefresh}
+              cardId={card._id}
+              currentUserId={card.assigneeId?._id || ''}
+              onCommentDeleted={() => setCommentsRefresh(prev => prev + 1)}
+            />
           </div>
         </div>
 
