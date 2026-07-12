@@ -7,6 +7,8 @@ import { AuthGuard } from '@/components/AuthGuard';
 import { CardModal } from './CardModal';
 import { SimpleDragDrop } from './SimpleDragDrop';
 import { DraggableList } from './DraggableList';
+import { CardTypeSelector } from '@/components/CardTypeSelector';
+import { CardType, CARD_TYPE_LIST } from '@/lib/cardTypes';
 import Link from 'next/link';
 
 interface User {
@@ -87,6 +89,7 @@ export default function BoardDetailPage() {
   const [boardMembers, setBoardMembers] = useState<User[]>([]);
   const [newCardTitle, setNewCardTitle] = useState('');
   const [selectedListId, setSelectedListId] = useState('');
+  const [selectedCardType, setSelectedCardType] = useState<CardType | undefined>();
   const [selectedCard, setSelectedCard] = useState<Card | null>(null);
   const [newMemberEmail, setNewMemberEmail] = useState('');
   const [showMembers, setShowMembers] = useState(false);
@@ -143,19 +146,20 @@ export default function BoardDetailPage() {
 
   const handleCreateCard = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newCardTitle.trim() || !selectedListId) return;
+    if (!newCardTitle.trim() || !selectedListId || !selectedCardType) return;
 
     try {
       const res = await fetch('/api/cards', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ listId: selectedListId, title: newCardTitle }),
+        body: JSON.stringify({ listId: selectedListId, title: newCardTitle, type: selectedCardType }),
       });
       if (!res.ok) throw new Error('Failed to create card');
       const newCard = await res.json();
       setCards({ ...cards, [selectedListId]: [...(cards[selectedListId] || []), newCard] });
       setNewCardTitle('');
       setSelectedListId('');
+      setSelectedCardType(undefined);
     } catch (err) {
       console.error(err);
     }
