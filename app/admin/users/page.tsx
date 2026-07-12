@@ -131,25 +131,9 @@ export default function AdminUsersPage() {
               sidebarOpen ? 'w-56' : 'w-0'
             }`}
           >
-            <div className="w-56 px-3 pt-4 pb-1 text-xs font-semibold text-[#7A8699] uppercase tracking-wider whitespace-nowrap">
-              Boards
-            </div>
-            <nav className="w-56 flex-1 px-2 py-1 space-y-0.5 overflow-y-auto">
-              {boards.map((board) => (
-                <Link
-                  key={board._id}
-                  href={`/boards/${board._id}`}
-                  className="flex items-center gap-2 px-2 py-1.5 rounded-lg text-sm transition text-[#42526E] hover:bg-[#F4F5F7] hover:text-[#172B4D]"
-                >
-                  <span className="w-3 h-3 rounded-sm flex-shrink-0 bg-[#0066CC]" />
-                  <span className="truncate">{board.title}</span>
-                </Link>
-              ))}
-            </nav>
-
             {/* Admin section */}
             {session?.user?.role === 'admin' && (
-              <div className="border-t border-[#E8EAED] px-3 py-3">
+              <div className="w-56 px-3 pt-4 pb-3 border-b border-[#E8EAED]">
                 <p className="text-xs font-semibold text-[#7A8699] uppercase tracking-wider whitespace-nowrap mb-2">
                   Admin
                 </p>
@@ -179,6 +163,22 @@ export default function AdminUsersPage() {
                 </nav>
               </div>
             )}
+
+            <div className="w-56 px-3 pt-4 pb-1 text-xs font-semibold text-[#7A8699] uppercase tracking-wider whitespace-nowrap">
+              Boards
+            </div>
+            <nav className="w-56 flex-1 px-2 py-1 space-y-0.5 overflow-y-auto">
+              {boards.map((board) => (
+                <Link
+                  key={board._id}
+                  href={`/boards/${board._id}`}
+                  className="flex items-center gap-2 px-2 py-1.5 rounded-lg text-sm transition text-[#42526E] hover:bg-[#F4F5F7] hover:text-[#172B4D]"
+                >
+                  <span className="w-3 h-3 rounded-sm flex-shrink-0 bg-[#0066CC]" />
+                  <span className="truncate">{board.title}</span>
+                </Link>
+              ))}
+            </nav>
           </aside>
 
           {/* Main content */}
