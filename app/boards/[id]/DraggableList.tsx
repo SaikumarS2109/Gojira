@@ -18,7 +18,6 @@ interface DraggableListProps {
   cards: Card[];
   draggingCardId: string | null;
   onCardClick: (card: Card) => void;
-  onDeleteList: (listId: string) => void;
   onAddCard: (listId: string) => void;
   selectedListId: string;
   newCardTitle: string;
@@ -33,7 +32,6 @@ export function DraggableList({
   cards,
   draggingCardId,
   onCardClick,
-  onDeleteList,
   onAddCard,
   selectedListId,
   newCardTitle,
@@ -51,14 +49,8 @@ export function DraggableList({
       }`}
     >
       {/* List Header */}
-      <div className="flex justify-between items-center px-3 pt-3 pb-1 group">
+      <div className="px-3 pt-3 pb-1">
         <h3 className="font-semibold text-sm text-[#172B4D]">{title}</h3>
-        <button
-          onClick={() => onDeleteList(listId)}
-          className="text-[#7A8699] hover:text-[#D93025] opacity-0 group-hover:opacity-100 transition text-sm leading-none p-1 rounded hover:bg-[#F4F5F7]"
-        >
-          ✕
-        </button>
       </div>
 
       {/* Cards */}

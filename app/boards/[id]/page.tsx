@@ -85,8 +85,6 @@ export default function BoardDetailPage() {
   const [lists, setLists] = useState<List[]>([]);
   const [cards, setCards] = useState<Record<string, Card[]>>({});
   const [boardMembers, setBoardMembers] = useState<User[]>([]);
-  const [newListTitle, setNewListTitle] = useState('');
-  const [showAddList, setShowAddList] = useState(false);
   const [newCardTitle, setNewCardTitle] = useState('');
   const [selectedListId, setSelectedListId] = useState('');
   const [selectedCard, setSelectedCard] = useState<Card | null>(null);
@@ -143,27 +141,6 @@ export default function BoardDetailPage() {
     }
   };
 
-  const handleCreateList = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!newListTitle.trim()) return;
-
-    try {
-      const res = await fetch('/api/lists', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ boardId, title: newListTitle }),
-      });
-      if (!res.ok) throw new Error('Failed to create list');
-      const newList = await res.json();
-      setLists([...lists, newList]);
-      setCards({ ...cards, [newList._id]: [] });
-      setNewListTitle('');
-      setShowAddList(false);
-    } catch (err) {
-      console.error(err);
-    }
-  };
-
   const handleCreateCard = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newCardTitle.trim() || !selectedListId) return;
@@ -179,20 +156,6 @@ export default function BoardDetailPage() {
       setCards({ ...cards, [selectedListId]: [...(cards[selectedListId] || []), newCard] });
       setNewCardTitle('');
       setSelectedListId('');
-    } catch (err) {
-      console.error(err);
-    }
-  };
-
-  const handleDeleteList = async (listId: string) => {
-    if (!confirm('Delete this list? All cards will be deleted.')) return;
-    try {
-      const res = await fetch(`/api/lists/${listId}`, { method: 'DELETE' });
-      if (!res.ok) throw new Error('Failed to delete list');
-      setLists(lists.filter((l) => l._id !== listId));
-      const newCards = { ...cards };
-      delete newCards[listId];
-      setCards(newCards);
     } catch (err) {
       console.error(err);
     }
@@ -516,7 +479,6 @@ export default function BoardDetailPage() {
                         cards={dragCards[list._id] || []}
                         draggingCardId={draggingCardId}
                         onCardClick={setSelectedCard}
-                        onDeleteList={handleDeleteList}
                         onAddCard={() => setSelectedListId(list._id)}
                         selectedListId={selectedListId}
                         newCardTitle={newCardTitle}
@@ -526,46 +488,6 @@ export default function BoardDetailPage() {
                       />
                     ))}
 
-                    {/* Add list */}
-                    <div className="min-w-64 flex-shrink-0">
-                      {showAddList ? (
-                        <div className="bg-white border border-[#D0D4DC] rounded-lg p-3 shadow-sm">
-                          <input
-                            type="text"
-                            autoFocus
-                            value={newListTitle}
-                            onChange={(e) => setNewListTitle(e.target.value)}
-                            placeholder="Enter list name"
-                            className="w-full px-3 py-2 text-sm rounded-md border border-[#D0D4DC] text-[#172B4D] placeholder-[#7A8699] focus:outline-none focus:ring-2 focus:ring-[#0066CC] focus:border-transparent mb-2"
-                            onKeyDown={(e) => {
-                              if (e.key === 'Enter') handleCreateList(e as unknown as React.FormEvent);
-                              if (e.key === 'Escape') { setShowAddList(false); setNewListTitle(''); }
-                            }}
-                          />
-                          <div className="flex gap-2">
-                            <button
-                              onClick={(e) => handleCreateList(e as unknown as React.FormEvent)}
-                              className="bg-[#0066CC] hover:bg-[#0052A3] text-white px-3 py-1 text-sm rounded-md transition"
-                            >
-                              Add list
-                            </button>
-                            <button
-                              onClick={() => setShowAddList(false)}
-                              className="text-[#7A8699] hover:text-[#172B4D] text-sm transition"
-                            >
-                              ✕
-                            </button>
-                          </div>
-                        </div>
-                      ) : (
-                        <button
-                          onClick={() => setShowAddList(true)}
-                          className="w-full text-left text-[#42526E] hover:text-[#172B4D] bg-white border border-[#D0D4DC] hover:border-[#0066CC] rounded-lg px-4 py-3 text-sm font-medium transition shadow-sm"
-                        >
-                          + Add a list
-                        </button>
-                      )}
-                    </div>
                   </div>
                 )}
               </SimpleDragDrop>
