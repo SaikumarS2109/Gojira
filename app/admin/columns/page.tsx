@@ -5,6 +5,23 @@ import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { AuthGuard } from '@/components/AuthGuard';
 import { AdminSidebar } from '@/components/AdminSidebar';
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  DragEndEvent,
+} from '@dnd-kit/core';
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  verticalListSortingStrategy,
+} from '@dnd-kit/sortable';
+import { useSortable } from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
 
 interface Board {
   _id: string;
@@ -17,6 +34,73 @@ interface List {
   order: number;
 }
 
+function SortableColumnItem({
+  id,
+  column,
+  onRename,
+  onDelete,
+}: {
+  id: string;
+  column: List;
+  onRename: (columnId: string, newTitle: string) => void;
+  onDelete: (columnId: string) => void;
+}) {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.5 : 1,
+  };
+
+  return (
+    <li
+      ref={setNodeRef}
+      style={style}
+      className="px-4 py-3 flex items-center gap-3 hover:bg-[#F9FAFB] group bg-white border-b border-[#E0E3E8] last:border-b-0"
+    >
+      <button
+        {...attributes}
+        {...listeners}
+        className="text-[#7A8699] hover:text-[#172B4D] cursor-grab active:cursor-grabbing"
+        title="Drag to reorder"
+      >
+        ⋮⋮
+      </button>
+      <span className="text-sm font-medium text-[#7A8699] w-8">
+        {column.order + 1}
+      </span>
+      <span className="flex-1 text-[#172B4D] font-medium">
+        {column.title}
+      </span>
+      <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition">
+        <button
+          onClick={() => {
+            const newTitle = prompt('Rename column:', column.title);
+            if (newTitle) onRename(id, newTitle);
+          }}
+          className="text-xs text-[#0066CC] hover:text-[#0052A3] font-medium transition"
+        >
+          Rename
+        </button>
+        <button
+          onClick={() => onDelete(id)}
+          className="text-xs text-[#D93025] hover:text-[#A01810] font-medium transition"
+        >
+          Delete
+        </button>
+      </div>
+    </li>
+  );
+}
+
 export default function AdminColumnsPage() {
   const { data: session, status } = useSession();
   const router = useRouter();
@@ -26,6 +110,13 @@ export default function AdminColumnsPage() {
   const [columns, setColumns] = useState<List[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
 
   useEffect(() => {
     if (status === 'loading') return;
@@ -129,6 +220,36 @@ export default function AdminColumnsPage() {
     }
   };
 
+  const handleDragEnd = async (event: DragEndEvent) => {
+    const { active, over } = event;
+
+    if (over && active.id !== over.id) {
+      const oldIndex = columns.findIndex((c) => c._id === active.id);
+      const newIndex = columns.findIndex((c) => c._id === over.id);
+
+      const newOrder = arrayMove(columns, oldIndex, newIndex);
+      setColumns(newOrder);
+
+      // Persist new order values
+      try {
+        for (let i = 0; i < newOrder.length; i++) {
+          if (newOrder[i].order !== i) {
+            await fetch(`/api/lists/${newOrder[i]._id}`, {
+              method: 'PATCH',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ order: i }),
+            });
+          }
+        }
+      } catch (err) {
+        setError('Failed to save column order');
+        console.error(err);
+        // Rollback to previous order
+        fetchColumns(selectedBoardId);
+      }
+    }
+  };
+
   return (
     <AuthGuard>
       <div className="min-h-screen bg-[#F4F5F7]">
@@ -171,40 +292,30 @@ export default function AdminColumnsPage() {
                   {columns.length === 0 ? (
                     <p className="text-[#7A8699]">No columns yet.</p>
                   ) : (
-                    <div className="bg-white border border-[#E0E3E8] rounded-lg overflow-hidden mb-6">
-                      <ul className="divide-y divide-[#E0E3E8]">
-                        {columns.map((column) => (
-                          <li
-                            key={column._id}
-                            className="px-4 py-3 flex items-center gap-3 hover:bg-[#F9FAFB] group"
-                          >
-                            <span className="text-sm font-medium text-[#7A8699] w-8">
-                              {column.order + 1}
-                            </span>
-                            <span className="flex-1 text-[#172B4D] font-medium">
-                              {column.title}
-                            </span>
-                            <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition">
-                              <button
-                                onClick={() => {
-                                  const newTitle = prompt('Rename column:', column.title);
-                                  if (newTitle) handleRenameColumn(column._id, newTitle);
-                                }}
-                                className="text-xs text-[#0066CC] hover:text-[#0052A3] font-medium transition"
-                              >
-                                Rename
-                              </button>
-                              <button
-                                onClick={() => handleDeleteColumn(column._id)}
-                                className="text-xs text-[#D93025] hover:text-[#A01810] font-medium transition"
-                              >
-                                Delete
-                              </button>
-                            </div>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
+                    <DndContext
+                      sensors={sensors}
+                      collisionDetection={closestCenter}
+                      onDragEnd={handleDragEnd}
+                    >
+                      <div className="bg-white border border-[#E0E3E8] rounded-lg overflow-hidden mb-6">
+                        <SortableContext
+                          items={columns.map((c) => c._id)}
+                          strategy={verticalListSortingStrategy}
+                        >
+                          <ul className="divide-y divide-[#E0E3E8]">
+                            {columns.map((column) => (
+                              <SortableColumnItem
+                                key={column._id}
+                                id={column._id}
+                                column={column}
+                                onRename={handleRenameColumn}
+                                onDelete={handleDeleteColumn}
+                              />
+                            ))}
+                          </ul>
+                        </SortableContext>
+                      </div>
+                    </DndContext>
                   )}
 
                   <form onSubmit={handleAddColumn} className="bg-white border border-[#E0E3E8] rounded-lg p-4">
