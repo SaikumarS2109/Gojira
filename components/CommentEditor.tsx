@@ -30,6 +30,7 @@ export function CommentEditor({
   const [showMentionDropdown, setShowMentionDropdown] = useState(false);
   const [mentionSearch, setMentionSearch] = useState('');
   const [isSaving, setIsSaving] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(false);
 
   const editor = useEditor({
     extensions: [
@@ -111,6 +112,17 @@ export function CommentEditor({
       .insertContent(`@${member.name} `)
       .run();
   };
+
+  if (!isExpanded) {
+    return (
+      <button
+        onClick={() => setIsExpanded(true)}
+        className="w-full px-4 py-2.5 text-sm text-[#42526E] border border-[#D0D4DC] rounded-lg bg-white hover:bg-[#F4F5F7] transition text-left"
+      >
+        Add a comment
+      </button>
+    );
+  }
 
   return (
     <div className="border border-[#D0D4DC] rounded-lg overflow-hidden bg-white">
@@ -242,6 +254,7 @@ export function CommentEditor({
             editor.commands.clearContent();
             setContent('');
             setMentions([]);
+            setIsExpanded(false);
           }}
           disabled={isSaving}
           className="px-3 py-1.5 text-sm text-[#42526E] bg-white border border-[#D0D4DC] rounded hover:bg-[#F4F5F7] transition disabled:opacity-50"

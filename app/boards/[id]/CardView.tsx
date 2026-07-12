@@ -378,12 +378,13 @@ export function CardView({
         </div>
 
         {/* Right: Metadata panel */}
-        <div className="w-72 flex-shrink-0 flex flex-col gap-3">
-          {/* Placeholder: Status */}
-          <div className="pointer-events-none opacity-40">
-            <p className="text-xs font-semibold text-[#7A8699] uppercase tracking-wider mb-1">Status</p>
-            <div className="w-full text-sm text-[#7A8699] bg-[#F4F5F7] rounded px-2 py-1.5">—</div>
-          </div>
+        <div className="w-72 flex-shrink-0 flex flex-col gap-3 min-h-0">
+          <div className="flex flex-col gap-3">
+            {/* Placeholder: Status */}
+            <div className="pointer-events-none opacity-40">
+              <p className="text-xs font-semibold text-[#7A8699] uppercase tracking-wider mb-1">Status</p>
+              <div className="w-full text-sm text-[#7A8699] bg-[#F4F5F7] rounded px-2 py-1.5">—</div>
+            </div>
 
           {/* Assignee — wired */}
           <div>
@@ -520,6 +521,8 @@ export function CardView({
           <div className="pointer-events-none opacity-40">
             <p className="text-xs font-semibold text-[#7A8699] uppercase tracking-wider mb-1">Card Type</p>
             <div className="w-full text-sm text-[#7A8699] bg-[#F4F5F7] rounded px-2 py-1.5">—</div>
+          </div>
+
           </div>
 
           {fieldError && (

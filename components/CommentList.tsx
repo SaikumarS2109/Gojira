@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { RichTextEditor } from '@/components/RichTextEditor';
 import { generateHTML } from '@tiptap/core';
 import StarterKit from '@tiptap/starter-kit';
 import Link from '@tiptap/extension-link';
@@ -36,22 +37,20 @@ export function CommentList({
   const [editContent, setEditContent] = useState('');
 
   useEffect(() => {
-    fetchComments(0);
-  }, []);
+    fetchComments(0, sortNewest);
+  }, [sortNewest]);
 
-  const fetchComments = async (pageNum: number) => {
+  const fetchComments = async (pageNum: number, isNewest: boolean) => {
     try {
       setLoading(true);
       const res = await fetch(`/api/comments?cardId=${cardId}&page=${pageNum}`);
       if (res.ok) {
         const data = await res.json();
-        const orderedComments = sortNewest
-          ? data.comments
-          : data.comments.reverse();
+        const comments = isNewest ? data.comments : data.comments.reverse();
         if (pageNum === 0) {
-          setComments(orderedComments);
+          setComments(comments);
         } else {
-          setComments(prev => [...prev, ...orderedComments]);
+          setComments(prev => [...prev, ...comments]);
         }
         setTotal(data.total);
         setHasMore(data.hasMore);
@@ -65,7 +64,7 @@ export function CommentList({
   };
 
   const handleLoadMore = () => {
-    fetchComments(page + 1);
+    fetchComments(page + 1, sortNewest);
   };
 
   const handleDelete = async (commentId: string) => {
@@ -85,12 +84,12 @@ export function CommentList({
     }
   };
 
-  const handleEditSave = async (commentId: string) => {
+  const handleEditSave = async (commentId: string, json?: string) => {
     try {
       const res = await fetch(`/api/comments/${commentId}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ content: editContent }),
+        body: JSON.stringify({ content: json || editContent }),
       });
 
       if (res.ok) {
@@ -155,12 +154,17 @@ export function CommentList({
         <h3 className="text-sm font-semibold text-[#172B4D]">
           Comments ({total})
         </h3>
-        <button
-          onClick={() => setSortNewest(!sortNewest)}
-          className="text-xs text-[#0066CC] hover:text-[#0052A3] transition"
-        >
-          {sortNewest ? 'Newest' : 'Oldest'} first
-        </button>
+        <div className="flex items-center gap-2">
+          <label className="text-xs text-[#7A8699] font-medium">Sort by:</label>
+          <select
+            value={sortNewest ? 'newest' : 'oldest'}
+            onChange={(e) => setSortNewest(e.target.value === 'newest')}
+            className="text-xs border border-[#D0D4DC] rounded px-2 py-1 bg-white text-[#172B4D] cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#0066CC]"
+          >
+            <option value="newest">Newest first</option>
+            <option value="oldest">Oldest first</option>
+          </select>
+        </div>
       </div>
 
       <div className="space-y-3">
@@ -211,30 +215,15 @@ export function CommentList({
             </div>
 
             {editingId === comment._id ? (
-              <div className="space-y-2">
-                <textarea
-                  value={editContent}
-                  onChange={e => setEditContent(e.target.value)}
-                  className="w-full text-sm border border-[#D0D4DC] rounded p-2 focus:outline-none focus:ring-2 focus:ring-[#0066CC]"
-                  rows={3}
-                />
-                <div className="flex gap-2">
-                  <button
-                    onClick={() => {
-                      handleEditSave(comment._id);
-                    }}
-                    className="text-xs px-2 py-1 bg-[#0066CC] text-white rounded hover:bg-[#0052A3] transition"
-                  >
-                    Save
-                  </button>
-                  <button
-                    onClick={() => setEditingId(null)}
-                    className="text-xs px-2 py-1 bg-[#F4F5F7] text-[#172B4D] rounded hover:bg-[#E8EAED] transition"
-                  >
-                    Cancel
-                  </button>
-                </div>
-              </div>
+              <RichTextEditor
+                value={editContent}
+                onChange={setEditContent}
+                onSave={async (json) => {
+                  await handleEditSave(comment._id, json);
+                }}
+                onCancel={() => setEditingId(null)}
+                placeholder="Edit your comment..."
+              />
             ) : (
               <div className="text-sm text-[#172B4D]">
                 {renderContent(comment.content)}
