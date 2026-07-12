@@ -12,6 +12,10 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
+    if (session.user.role !== 'admin') {
+      return NextResponse.json({ error: 'Admins only' }, { status: 403 });
+    }
+
     const body = await request.json();
     const { boardId, title } = body;
 
@@ -24,11 +28,6 @@ export async function POST(request: NextRequest) {
     const board = await Board.findById(boardId);
     if (!board) {
       return NextResponse.json({ error: 'Board not found' }, { status: 404 });
-    }
-
-    const isMember = board.memberIds.some((id: any) => id.toString() === session.user.id);
-    if (!isMember) {
-      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 
     const maxOrder = await List.findOne({ boardId }).sort({ order: -1 });

@@ -16,6 +16,10 @@ export async function PATCH(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
+    if (session.user.role !== 'admin') {
+      return NextResponse.json({ error: 'Admins only' }, { status: 403 });
+    }
+
     const { id } = await params;
     const body = await request.json();
     const { title, order } = body;
@@ -25,12 +29,6 @@ export async function PATCH(
     const list = await List.findById(id);
     if (!list) {
       return NextResponse.json({ error: 'List not found' }, { status: 404 });
-    }
-
-    const board = await Board.findById(list.boardId);
-    const isMember = board?.memberIds.some((id: any) => id.toString() === session.user.id);
-    if (!isMember) {
-      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 
     if (title) list.title = title;
@@ -54,18 +52,16 @@ export async function DELETE(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
+    if (session.user.role !== 'admin') {
+      return NextResponse.json({ error: 'Admins only' }, { status: 403 });
+    }
+
     const { id } = await params;
     await connectDB();
 
     const list = await List.findById(id);
     if (!list) {
       return NextResponse.json({ error: 'List not found' }, { status: 404 });
-    }
-
-    const board = await Board.findById(list.boardId);
-    const isMember = board?.memberIds.some((id: any) => id.toString() === session.user.id);
-    if (!isMember) {
-      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 
     await Card.deleteMany({ listId: id });
