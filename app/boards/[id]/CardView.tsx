@@ -305,17 +305,19 @@ export function CardView({
             Acceptance Criteria
           </p>
           {editingDescription ? (
-            <div className="w-full">
-              <RichTextEditor
-                value={descriptionValue}
-                onChange={(json) => setDescriptionValue(json)}
-                onBlur={handleSaveDescription}
-                placeholder="Add a description..."
-              />
-              <div className="mt-2 text-xs text-[#7A8699]">
-                Click outside to save
-              </div>
-            </div>
+            <RichTextEditor
+              value={descriptionValue}
+              onChange={(json) => setDescriptionValue(json)}
+              onSave={async (json) => {
+                await saveField({ description: json }, 'description');
+                setEditingDescription(false);
+              }}
+              onCancel={() => {
+                setDescriptionValue(card.description);
+                setEditingDescription(false);
+              }}
+              placeholder="Add a description..."
+            />
           ) : (
             <div
               onClick={() => setEditingDescription(true)}

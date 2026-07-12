@@ -1,15 +1,16 @@
 'use client';
 
+import React, { useEffect } from 'react';
 import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import Link from '@tiptap/extension-link';
 import Placeholder from '@tiptap/extension-placeholder';
-import { useEffect } from 'react';
 
 interface RichTextEditorProps {
   value: string;
   onChange: (json: string) => void;
-  onBlur?: () => void;
+  onSave?: (json: string) => Promise<void>;
+  onCancel?: () => void;
   disabled?: boolean;
   placeholder?: string;
 }
@@ -17,10 +18,13 @@ interface RichTextEditorProps {
 export function RichTextEditor({
   value,
   onChange,
-  onBlur,
+  onSave,
+  onCancel,
   disabled = false,
   placeholder = 'Add a description...',
 }: RichTextEditorProps) {
+  const [isSaving, setIsSaving] = React.useState(false);
+
   const editor = useEditor({
     extensions: [
       StarterKit.configure({
@@ -33,7 +37,6 @@ export function RichTextEditor({
     onUpdate: ({ editor }) => {
       onChange(JSON.stringify(editor.getJSON()));
     },
-    onBlur,
     editable: !disabled,
   });
 
@@ -49,6 +52,17 @@ export function RichTextEditor({
   }, []);
 
   if (!editor) return null;
+
+  const handleSave = async () => {
+    if (onSave) {
+      setIsSaving(true);
+      try {
+        await onSave(JSON.stringify(editor.getJSON()));
+      } finally {
+        setIsSaving(false);
+      }
+    }
+  };
 
   return (
     <div className="border border-[#D0D4DC] rounded-lg overflow-hidden bg-white">
@@ -133,11 +147,33 @@ export function RichTextEditor({
         </ToolbarButton>
       </div>
 
-      {/* Editor */}
+      {/* Editor Content - no border, no padding on the wrapper */}
       <EditorContent
         editor={editor}
-        className="prose prose-sm max-w-none p-3 focus:outline-none min-h-[200px] text-[#172B4D]"
+        className="prose prose-sm max-w-none p-3 focus:outline-none min-h-[200px] text-[#172B4D] [&_.ProseMirror]:focus:outline-none [&_.ProseMirror]:p-0"
       />
+
+      {/* Save/Cancel buttons */}
+      {onSave && (
+        <div className="flex gap-2 justify-end p-3 border-t border-[#E8EAED] bg-[#F4F5F7]">
+          {onCancel && (
+            <button
+              onClick={onCancel}
+              disabled={isSaving}
+              className="px-3 py-1.5 text-sm text-[#42526E] bg-white border border-[#D0D4DC] rounded hover:bg-[#F4F5F7] transition disabled:opacity-50"
+            >
+              Cancel
+            </button>
+          )}
+          <button
+            onClick={handleSave}
+            disabled={isSaving}
+            className="px-3 py-1.5 text-sm text-white bg-[#0066CC] rounded hover:bg-[#0052A3] transition disabled:opacity-50"
+          >
+            {isSaving ? 'Saving...' : 'Save'}
+          </button>
+        </div>
+      )}
     </div>
   );
 }
