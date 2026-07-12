@@ -27,7 +27,18 @@ body {
 
 /* Tiptap Editor & Rendered Content Styling */
 .tiptap {
-  padding: 0.5rem 0;
+  padding: 0;
+
+  /* Remove border on editor */
+  & > .ProseMirror {
+    outline: none;
+    border: none;
+  }
+
+  /* Ensure padding is applied to content */
+  & > div {
+    padding: 0;
+  }
 
   /* Paragraphs */
   & p {

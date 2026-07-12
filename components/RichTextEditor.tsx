@@ -168,10 +168,12 @@ export function RichTextEditor({
       </div>
 
       {/* Editor Content - .tiptap class applies CSS styling for live formatted text */}
-      <EditorContent
-        editor={editor}
-        className="tiptap px-4 py-3 focus:outline-none min-h-[200px] text-[#172B4D]"
-      />
+      <div className="px-4 py-3 min-h-[200px] bg-white">
+        <EditorContent
+          editor={editor}
+          className="tiptap focus:outline-none text-[#172B4D]"
+        />
+      </div>
 
       {/* Save/Cancel buttons */}
       {onSave && (

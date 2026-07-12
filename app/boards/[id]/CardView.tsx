@@ -343,7 +343,7 @@ export function CardView({
           ) : (
             <div
               onClick={() => setEditingDescription(true)}
-              className="min-h-32 text-sm text-[#172B4D] cursor-text hover:bg-[#F4F5F7] rounded-lg p-3 border border-transparent hover:border-[#E8EAED] transition"
+              className="min-h-32 text-sm text-[#172B4D] cursor-text transition px-4 py-3"
             >
               {descriptionValue && descriptionValue !== '{}' ? (
                 <RenderedDescription json={descriptionValue} />
