@@ -368,7 +368,7 @@ export function CardView({
           <div className="mb-2 flex">
             { titleComponent() }
           </div>
-          <h3 className="text-sm font-semibold text-[#172B4D]">
+          <h3 className="text-sm font-semibold text-[#172B4D] mb-2">
             Acceptance Criteria
           </h3>
           {editingDescription ? (
@@ -388,7 +388,7 @@ export function CardView({
           ) : (
             <div
               onClick={() => setEditingDescription(true)}
-              className="min-h-32 text-sm text-[#172B4D] cursor-text transition px-4 py-3"
+              className="min-h-32 text-sm text-[#172B4D] cursor-text transition px-4 py-3 border border-[#E0E3E8] rounded-lg bg-white hover:bg-[#F9FAFB]"
             >
               {descriptionValue && descriptionValue !== '{}' ? (
                 <RenderedDescription json={descriptionValue} />
@@ -448,20 +448,33 @@ export function CardView({
         <div className="w-72 flex-shrink-0 flex flex-col min-h-0">
           <div className="flex flex-col gap-3">
             {/* Status — wired */}
-            <div>
-              <h3 className="text-sm font-semibold text-[#172B4D] mb-1">Status</h3>
-              <select
-                value={card.listId}
-                onChange={(e) => handleListChange(e.target.value)}
+            <div className="relative">
+              <button
+                onClick={() => setShowLabelDropdown(!showLabelDropdown)}
+                className="w-full px-3 py-1.5 text-sm font-medium bg-[#0066CC] text-white rounded flex items-center justify-between hover:bg-[#0052A3] transition disabled:opacity-50"
                 disabled={saving === 'status'}
-                className="w-full text-sm border border-[#D0D4DC] rounded px-2 py-1.5 focus:outline-none focus:ring-2 focus:ring-[#0066CC] bg-white disabled:opacity-50 cursor-pointer text-[#172B4D]"
               >
-                {boardLists.map((list) => (
-                  <option key={list._id} value={list._id}>
-                    {list.name}
-                  </option>
-                ))}
-              </select>
+                <span>
+                  {boardLists.find(l => l._id === card.listId)?.name || 'Select Status'}
+                </span>
+                <span>▼</span>
+              </button>
+              {showLabelDropdown && (
+                <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-[#D0D4DC] rounded shadow-md z-10">
+                  {boardLists.map((list) => (
+                    <button
+                      key={list._id}
+                      onClick={() => {
+                        handleListChange(list._id);
+                        setShowLabelDropdown(false);
+                      }}
+                      className="w-full text-left px-3 py-2 text-sm text-[#172B4D] hover:bg-[#F4F5F7] transition"
+                    >
+                      {list.name}
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
 
           {/* Assignee — wired */}
