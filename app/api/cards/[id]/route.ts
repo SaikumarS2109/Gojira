@@ -53,7 +53,7 @@ export async function PATCH(
 
     const { id } = await params;
     const body = await request.json();
-    const { title, description, listId, order, assigneeId, labelIds, storyPoints } = body;
+    const { title, description, listId, order, assigneeId, labelIds, storyPoints, type } = body;
 
     // Validate storyPoints if provided
     if ('storyPoints' in body) {
@@ -67,6 +67,14 @@ export async function PATCH(
     if ('labelIds' in body) {
       if (!Array.isArray(labelIds)) {
         return NextResponse.json({ error: 'labelIds must be an array' }, { status: 400 });
+      }
+    }
+
+    // Validate type if provided
+    if ('type' in body) {
+      const validTypes = ['Epic', 'Story', 'Subtask', 'Task', 'Bug'];
+      if (!validTypes.includes(type)) {
+        return NextResponse.json({ error: 'Invalid card type' }, { status: 400 });
       }
     }
 
@@ -91,6 +99,7 @@ export async function PATCH(
     if (assigneeId !== undefined) card.assigneeId = assigneeId || null;
     if ('labelIds' in body) card.labelIds = labelIds;
     if ('storyPoints' in body) card.storyPoints = storyPoints;
+    if ('type' in body) card.type = type;
 
     await card.save();
     await card.populate([
