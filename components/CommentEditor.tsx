@@ -118,14 +118,14 @@ export function CommentEditor({
         <ToolbarButton
           active={editor.isActive('bold')}
           onClick={() => editor.chain().focus().toggleBold().run()}
-          title="Bold"
+          title="Bold (Ctrl+B)"
         >
           <strong>B</strong>
         </ToolbarButton>
         <ToolbarButton
           active={editor.isActive('italic')}
           onClick={() => editor.chain().focus().toggleItalic().run()}
-          title="Italic"
+          title="Italic (Ctrl+I)"
         >
           <em>I</em>
         </ToolbarButton>
@@ -135,6 +135,21 @@ export function CommentEditor({
           title="Strikethrough"
         >
           <s>S</s>
+        </ToolbarButton>
+        <div className="w-px bg-[#D0D4DC] mx-1" />
+        <ToolbarButton
+          active={editor.isActive('heading', { level: 1 })}
+          onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()}
+          title="Heading 1"
+        >
+          H1
+        </ToolbarButton>
+        <ToolbarButton
+          active={editor.isActive('heading', { level: 2 })}
+          onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
+          title="Heading 2"
+        >
+          H2
         </ToolbarButton>
         <div className="w-px bg-[#D0D4DC] mx-1" />
         <ToolbarButton
@@ -150,6 +165,32 @@ export function CommentEditor({
           title="Ordered list"
         >
           1
+        </ToolbarButton>
+        <ToolbarButton
+          active={editor.isActive('codeBlock')}
+          onClick={() => editor.chain().focus().toggleCodeBlock().run()}
+          title="Code block"
+        >
+          {'<>'}
+        </ToolbarButton>
+        <ToolbarButton
+          active={editor.isActive('blockquote')}
+          onClick={() => editor.chain().focus().toggleBlockquote().run()}
+          title="Blockquote"
+        >
+          "
+        </ToolbarButton>
+        <div className="w-px bg-[#D0D4DC] mx-1" />
+        <ToolbarButton
+          onClick={() => {
+            const url = prompt('Enter URL:');
+            if (url) {
+              editor.chain().focus().extendMarkRange('link').setLink({ href: url }).run();
+            }
+          }}
+          title="Insert link"
+        >
+          🔗
         </ToolbarButton>
       </div>
 
