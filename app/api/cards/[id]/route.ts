@@ -30,7 +30,10 @@ export async function GET(
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 
-    await card.populate('assigneeId', 'name email');
+    await card.populate([
+      { path: 'assigneeId', select: 'name email' },
+      { path: 'labelIds', select: 'name' }
+    ]);
     return NextResponse.json(card);
   } catch (error) {
     console.error('Get card error:', error);
@@ -90,8 +93,10 @@ export async function PATCH(
     if ('storyPoints' in body) card.storyPoints = storyPoints;
 
     await card.save();
-    await card.populate('assigneeId', 'name email');
-    await card.populate('labelIds', 'name');
+    await card.populate([
+      { path: 'assigneeId', select: 'name email' },
+      { path: 'labelIds', select: 'name' }
+    ]);
 
     return NextResponse.json(card);
   } catch (error) {

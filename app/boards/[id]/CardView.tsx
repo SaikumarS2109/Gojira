@@ -330,8 +330,8 @@ export function CardView({
           <div>
             <p className="text-xs font-semibold text-[#7A8699] uppercase tracking-wider mb-1">Labels</p>
 
-            {/* Selected labels as chips */}
-            <div className="flex flex-wrap gap-1 mb-2">
+            {/* Selected labels as chips + add button */}
+            <div className="flex flex-wrap gap-1 items-center">
               {labelIds.map(id => {
                 const label = availableLabels.find(l => l._id === id) ||
                               card.labelIds?.find(l => l._id === id);
@@ -351,54 +351,62 @@ export function CardView({
                   </span>
                 );
               })}
-            </div>
 
-            {/* Label search input */}
-            <div className="relative">
-              <input
-                type="text"
-                value={labelSearch}
-                onChange={(e) => {
-                  setLabelSearch(e.target.value);
-                  setShowLabelDropdown(true);
-                }}
-                onFocus={() => setShowLabelDropdown(true)}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter') {
-                    e.preventDefault();
-                    handleCreateLabel();
-                  }
-                }}
-                placeholder="Search or create label..."
-                disabled={saving === 'labels'}
-                className="w-full text-sm border border-[#D0D4DC] rounded px-2 py-1.5 focus:outline-none focus:ring-2 focus:ring-[#0066CC] disabled:opacity-50"
-              />
+              {/* Add label button */}
+              <div className="relative">
+                <button
+                  onClick={() => setShowLabelDropdown(!showLabelDropdown)}
+                  disabled={saving === 'labels'}
+                  className="inline-flex items-center justify-center w-6 h-6 bg-[#E8EAED] text-[#172B4D] text-sm font-semibold rounded hover:bg-[#D0D4DC] transition disabled:opacity-50"
+                  title="Add label"
+                >
+                  +
+                </button>
 
-              {/* Dropdown suggestions */}
-              {showLabelDropdown && (
-                <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-[#D0D4DC] rounded shadow-md z-10 max-h-40 overflow-y-auto">
-                  {filteredLabels.length > 0 ? (
-                    filteredLabels.map(label => (
-                      <button
-                        key={label._id}
-                        onClick={() => handleAddLabel(label)}
-                        className="w-full text-left px-2 py-1.5 text-sm text-[#172B4D] hover:bg-[#F4F5F7] transition"
-                      >
-                        {label.name}
-                      </button>
-                    ))
-                  ) : labelSearch.trim() ? (
-                    <button
-                      onClick={() => handleCreateLabel()}
-                      className="w-full text-left px-2 py-1.5 text-sm text-[#0066CC] hover:bg-[#F4F5F7]"
-                    >
-                      + Create "{labelSearch.trim()}"
-                    </button>
-                  ) : (
-                    <div className="px-2 py-1.5 text-xs text-[#7A8699]">No labels</div>
-                  )}
-                </div>
-              )}
+                {/* Dropdown suggestions */}
+                {showLabelDropdown && (
+                  <div className="absolute top-full left-0 mt-1 bg-white border border-[#D0D4DC] rounded shadow-md z-10 min-w-48 max-h-48 overflow-y-auto">
+                    <div className="p-2 border-b border-[#E8EAED]">
+                      <input
+                        autoFocus
+                        type="text"
+                        value={labelSearch}
+                        onChange={(e) => setLabelSearch(e.target.value)}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter') {
+                            e.preventDefault();
+                            handleCreateLabel();
+                          }
+                        }}
+                        placeholder="Search or create..."
+                        className="w-full text-sm border border-[#D0D4DC] rounded px-2 py-1.5 focus:outline-none focus:ring-2 focus:ring-[#0066CC]"
+                      />
+                    </div>
+                    <div>
+                      {filteredLabels.length > 0 ? (
+                        filteredLabels.map(label => (
+                          <button
+                            key={label._id}
+                            onClick={() => handleAddLabel(label)}
+                            className="w-full text-left px-2 py-1.5 text-sm text-[#172B4D] hover:bg-[#F4F5F7] transition"
+                          >
+                            {label.name}
+                          </button>
+                        ))
+                      ) : labelSearch.trim() ? (
+                        <button
+                          onClick={() => handleCreateLabel()}
+                          className="w-full text-left px-2 py-1.5 text-sm text-[#0066CC] hover:bg-[#F4F5F7]"
+                        >
+                          + Create "{labelSearch.trim()}"
+                        </button>
+                      ) : (
+                        <div className="px-2 py-1.5 text-xs text-[#7A8699]">No labels</div>
+                      )}
+                    </div>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
 

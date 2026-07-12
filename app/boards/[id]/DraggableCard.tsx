@@ -46,10 +46,6 @@ export function DraggableCard({ card, onCardClick, sequencePrefix }: DraggableCa
       )}
       <p className="text-sm text-[#172B4D] font-medium leading-snug">{card.title}</p>
 
-      {card.description && (
-        <p className="text-xs text-[#42526E] mt-1 line-clamp-2">{card.description}</p>
-      )}
-
       {card.assigneeId && (
         <div className="flex items-center gap-1 mt-2">
           <div className="w-5 h-5 rounded-full bg-[#0066CC] text-white text-xs flex items-center justify-center font-bold">
@@ -60,9 +56,8 @@ export function DraggableCard({ card, onCardClick, sequencePrefix }: DraggableCa
       )}
 
       {/* Story Points badge */}
-      <div className="flex items-center justify-between mt-2 text-xs text-[#7A8699]">
-        <span>SP:</span>
-        <span className="font-semibold text-[#172B4D]">{card.storyPoints ?? "-"}</span>
+      <div className="flex items-center mt-2 text-xs text-[#7A8699]">
+        <span className="font-semibold text-[#172B4D] bg-gray-100 px-1">{card.storyPoints ?? "-"}</span>
       </div>
     </div>
   );
