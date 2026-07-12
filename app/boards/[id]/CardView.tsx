@@ -3,6 +3,8 @@
 import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { RichTextEditor } from '@/components/RichTextEditor';
+import { CommentEditor } from '@/components/CommentEditor';
+import { CommentList } from '@/components/CommentList';
 import { generateHTML } from '@tiptap/core';
 import StarterKit from '@tiptap/starter-kit';
 import TipTapLink from '@tiptap/extension-link';
@@ -109,6 +111,7 @@ export function CardView({
   const [showLabelDropdown, setShowLabelDropdown] = useState(false);
   const [saving, setSaving] = useState<string | null>(null);
   const [fieldError, setFieldError] = useState<string | null>(null);
+  const [commentsRefresh, setCommentsRefresh] = useState(0);
   const discardTitleRef = useRef(false);
   const discardDescRef = useRef(false);
   const labelDropdownRef = useRef<HTMLDivElement>(null);
@@ -323,7 +326,7 @@ export function CardView({
           <div className="mb-2 flex">
             { titleComponent() }
           </div>
-          <p className="text-xs font-semibold text-[#7A8699] uppercase tracking-wider mb-2">
+          <p className="text-xs font-semibold text-[#7A8699] uppercase tracking-wider">
             Acceptance Criteria
           </p>
           {editingDescription ? (
@@ -520,6 +523,23 @@ export function CardView({
           >
             Delete card
           </button>
+        </div>
+
+        {/* Comments Section */}
+        <div className="border-t border-[#E0E3E8] pt-4">
+          <CommentEditor
+            cardId={card._id}
+            boardMembers={boardMembers}
+            onCommentCreated={() => setCommentsRefresh(prev => prev + 1)}
+          />
+          <div className="mt-4">
+            <CommentList
+              key={commentsRefresh}
+              cardId={card._id}
+              currentUserId={card.assigneeId?._id || ''}
+              onCommentDeleted={() => setCommentsRefresh(prev => prev + 1)}
+            />
+          </div>
         </div>
       </div>
     </div>
