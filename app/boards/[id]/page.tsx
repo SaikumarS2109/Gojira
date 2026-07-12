@@ -334,6 +334,31 @@ export default function BoardDetailPage() {
               sidebarOpen ? 'w-56' : 'w-0'
             }`}
           >
+            {/* Admin section */}
+            {session?.user?.role === 'admin' && (
+              <div className="w-56 px-3 pt-4 pb-3 border-b border-[#E8EAED]">
+                <p className="text-xs font-semibold text-[#7A8699] uppercase tracking-wider whitespace-nowrap mb-2">
+                  Admin
+                </p>
+                <nav className="space-y-0.5">
+                  <Link
+                    href="/admin/users"
+                    className="flex items-center gap-2 px-2 py-1.5 rounded-lg text-sm transition text-[#42526E] hover:bg-[#F4F5F7] hover:text-[#172B4D]"
+                  >
+                    <span className="w-3 h-3 rounded-sm flex-shrink-0 bg-[#0066CC]" />
+                    <span className="truncate">Users</span>
+                  </Link>
+                  <Link
+                    href="/admin/columns"
+                    className="flex items-center gap-2 px-2 py-1.5 rounded-lg text-sm transition text-[#42526E] hover:bg-[#F4F5F7] hover:text-[#172B4D]"
+                  >
+                    <span className="w-3 h-3 rounded-sm flex-shrink-0 bg-[#0066CC]" />
+                    <span className="truncate">Board Management</span>
+                  </Link>
+                </nav>
+              </div>
+            )}
+
             <div className="w-56 px-3 pt-4 pb-1 text-xs font-semibold text-[#7A8699] uppercase tracking-wider whitespace-nowrap">
               Boards
             </div>
@@ -354,16 +379,6 @@ export default function BoardDetailPage() {
                 </Link>
               ))}
             </nav>
-
-            {session?.user?.role === 'admin' && (
-              <Link
-                href="/admin"
-                className="flex items-center gap-2 px-2 py-1.5 mx-2 rounded-lg text-sm transition text-[#42526E] hover:bg-[#F4F5F7] hover:text-[#172B4D]"
-              >
-                <span className="w-3 h-3 rounded-sm flex-shrink-0 bg-[#D93025]" />
-                <span className="truncate">Admin</span>
-              </Link>
-            )}
 
             {/* New board */}
             <div className="w-56 px-2 py-3 border-t border-[#E8EAED]">
