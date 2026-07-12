@@ -71,6 +71,15 @@ export function RichTextEditor({
     }
   }, []);
 
+  useEffect(() => {
+    if (editor && onSave) {
+      setTimeout(() => {
+        editor.view.dom.focus();
+        editor.commands.focus('end');
+      }, 0);
+    }
+  }, [editor, onSave]);
+
   if (!editor) return null;
 
   const handleSave = async () => {

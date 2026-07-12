@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import Link from '@tiptap/extension-link';
@@ -112,6 +112,15 @@ export function CommentEditor({
       .insertContent(`@${member.name} `)
       .run();
   };
+
+  useEffect(() => {
+    if (isExpanded && editor) {
+      setTimeout(() => {
+        editor.view.dom.focus();
+        editor.commands.focus('end');
+      }, 0);
+    }
+  }, [isExpanded, editor]);
 
   if (!isExpanded) {
     return (
