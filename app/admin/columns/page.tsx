@@ -75,6 +75,60 @@ export default function AdminColumnsPage() {
     }
   };
 
+  const handleAddColumn = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const formData = new FormData(e.target as HTMLFormElement);
+    const title = formData.get('columnTitle') as string;
+
+    if (!title.trim() || !selectedBoardId) return;
+
+    try {
+      const res = await fetch('/api/lists', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ boardId: selectedBoardId, title }),
+      });
+      if (!res.ok) throw new Error('Failed to add column');
+      const newColumn = await res.json();
+      setColumns([...columns, newColumn].sort((a: List, b: List) => a.order - b.order));
+      (e.target as HTMLFormElement).reset();
+    } catch (err) {
+      setError('Failed to add column');
+      console.error(err);
+    }
+  };
+
+  const handleRenameColumn = async (columnId: string, newTitle: string) => {
+    if (!newTitle.trim()) return;
+
+    try {
+      const res = await fetch(`/api/lists/${columnId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ title: newTitle }),
+      });
+      if (!res.ok) throw new Error('Failed to rename column');
+      const updated = await res.json();
+      setColumns(columns.map((c) => (c._id === columnId ? updated : c)));
+    } catch (err) {
+      setError('Failed to rename column');
+      console.error(err);
+    }
+  };
+
+  const handleDeleteColumn = async (columnId: string) => {
+    if (!confirm('Delete this column? All cards will be deleted.')) return;
+
+    try {
+      const res = await fetch(`/api/lists/${columnId}`, { method: 'DELETE' });
+      if (!res.ok) throw new Error('Failed to delete column');
+      setColumns(columns.filter((c) => c._id !== columnId));
+    } catch (err) {
+      setError('Failed to delete column');
+      console.error(err);
+    }
+  };
+
   return (
     <AuthGuard>
       <div className="min-h-screen bg-[#F4F5F7]">
@@ -117,7 +171,7 @@ export default function AdminColumnsPage() {
                   {columns.length === 0 ? (
                     <p className="text-[#7A8699]">No columns yet.</p>
                   ) : (
-                    <div className="bg-white border border-[#E0E3E8] rounded-lg overflow-hidden">
+                    <div className="bg-white border border-[#E0E3E8] rounded-lg overflow-hidden mb-6">
                       <ul className="divide-y divide-[#E0E3E8]">
                         {columns.map((column) => (
                           <li
@@ -130,12 +184,49 @@ export default function AdminColumnsPage() {
                             <span className="flex-1 text-[#172B4D] font-medium">
                               {column.title}
                             </span>
-                            <span className="text-xs text-[#7A8699]">Actions coming soon</span>
+                            <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition">
+                              <button
+                                onClick={() => {
+                                  const newTitle = prompt('Rename column:', column.title);
+                                  if (newTitle) handleRenameColumn(column._id, newTitle);
+                                }}
+                                className="text-xs text-[#0066CC] hover:text-[#0052A3] font-medium transition"
+                              >
+                                Rename
+                              </button>
+                              <button
+                                onClick={() => handleDeleteColumn(column._id)}
+                                className="text-xs text-[#D93025] hover:text-[#A01810] font-medium transition"
+                              >
+                                Delete
+                              </button>
+                            </div>
                           </li>
                         ))}
                       </ul>
                     </div>
                   )}
+
+                  <form onSubmit={handleAddColumn} className="bg-white border border-[#E0E3E8] rounded-lg p-4">
+                    <label className="block text-sm font-medium text-[#172B4D] mb-2">
+                      Add Column
+                    </label>
+                    <div className="flex gap-2">
+                      <input
+                        type="text"
+                        name="columnTitle"
+                        placeholder="Column title"
+                        className="flex-1 px-3 py-2 border border-[#D0D4DC] rounded-md text-[#172B4D] focus:outline-none focus:ring-2 focus:ring-[#0066CC] focus:border-transparent"
+                        required
+                      />
+                      <button
+                        type="submit"
+                        className="bg-[#0066CC] hover:bg-[#0052A3] text-white px-4 py-2 text-sm font-medium rounded-md transition"
+                      >
+                        Add
+                      </button>
+                    </div>
+                  </form>
                 </div>
               )}
             </div>
