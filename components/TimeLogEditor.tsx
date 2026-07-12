@@ -67,8 +67,8 @@ export function TimeLogEditor({ cardId, onTimeLogCreated }: TimeLogEditorProps) 
 
   return (
     <>
-      <div className="fixed inset-0 bg-black bg-opacity-30 z-40" onClick={handleClose} />
-      <div className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white rounded-lg shadow-lg z-50 w-96">
+      <div className="fixed inset-0 bg-black bg-opacity-10 z-40" onClick={handleClose} />
+      <div className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white rounded-lg shadow-md z-50 w-96">
         <div className="p-4 border-b border-[#E8EAED]">
           <h2 className="text-sm font-semibold text-[#172B4D]">Add Work Log</h2>
         </div>
