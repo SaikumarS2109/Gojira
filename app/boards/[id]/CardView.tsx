@@ -5,6 +5,9 @@ import Link from 'next/link';
 import { RichTextEditor } from '@/components/RichTextEditor';
 import { CommentEditor } from '@/components/CommentEditor';
 import { CommentList } from '@/components/CommentList';
+import { TimeLogEditor } from '@/components/TimeLogEditor';
+import { TimeLogList } from '@/components/TimeLogList';
+import { Tabs } from '@/components/Tabs';
 import { generateHTML } from '@tiptap/core';
 import StarterKit from '@tiptap/starter-kit';
 import TipTapLink from '@tiptap/extension-link';
@@ -112,6 +115,7 @@ export function CardView({
   const [saving, setSaving] = useState<string | null>(null);
   const [fieldError, setFieldError] = useState<string | null>(null);
   const [commentsRefresh, setCommentsRefresh] = useState(0);
+  const [timelogsRefresh, setTimelogsRefresh] = useState(0);
   const discardTitleRef = useRef(false);
   const discardDescRef = useRef(false);
   const labelDropdownRef = useRef<HTMLDivElement>(null);
@@ -356,20 +360,48 @@ export function CardView({
             </div>
           )}
 
-          {/* Comments Section */}
+          {/* Comments & Work Log Tabs */}
           <div className="mt-8">
-            <CommentList
-              key={commentsRefresh}
-              cardId={card._id}
-              currentUserId={card.assigneeId?._id || ''}
-              onCommentDeleted={() => setCommentsRefresh(prev => prev + 1)}
-              editor={
-                <CommentEditor
-                  cardId={card._id}
-                  boardMembers={boardMembers}
-                  onCommentCreated={() => setCommentsRefresh(prev => prev + 1)}
-                />
-              }
+            <Tabs
+              defaultTab="comments"
+              tabs={[
+                {
+                  id: 'comments',
+                  label: 'Comments',
+                  content: (
+                    <CommentList
+                      key={commentsRefresh}
+                      cardId={card._id}
+                      currentUserId={card.assigneeId?._id || ''}
+                      onCommentDeleted={() => setCommentsRefresh(prev => prev + 1)}
+                      editor={
+                        <CommentEditor
+                          cardId={card._id}
+                          boardMembers={boardMembers}
+                          onCommentCreated={() => setCommentsRefresh(prev => prev + 1)}
+                        />
+                      }
+                    />
+                  ),
+                },
+                {
+                  id: 'worklog',
+                  label: 'Work Log',
+                  content: (
+                    <div className="space-y-3" key={timelogsRefresh}>
+                      <TimeLogEditor
+                        cardId={card._id}
+                        onTimeLogCreated={() => setTimelogsRefresh(prev => prev + 1)}
+                      />
+                      <TimeLogList
+                        cardId={card._id}
+                        currentUserId={card.assigneeId?._id || ''}
+                        onTimeLogDeleted={() => setTimelogsRefresh(prev => prev + 1)}
+                      />
+                    </div>
+                  ),
+                },
+              ]}
             />
           </div>
         </div>
