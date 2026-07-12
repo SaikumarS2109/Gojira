@@ -2,6 +2,7 @@
 
 import { useEffect } from 'react';
 import { CardView } from './CardView';
+import { CardType } from '@/lib/cardTypes';
 
 interface Card {
   _id: string;
@@ -9,6 +10,7 @@ interface Card {
   description: string;
   listId: string;
   ticketNumber?: number;
+  type?: CardType;
   assigneeId?: { _id: string; name: string; email: string };
 }
 
@@ -29,6 +31,7 @@ interface CardModalProps {
   boardId: string;
   sequencePrefix: string;
   boardMembers: User[];
+  enabledCardTypes?: CardType[];
   onUpdate: (updates: CardUpdate) => Promise<void>;
   onDelete: () => Promise<void>;
   onClose: () => void;
@@ -39,6 +42,7 @@ export function CardModal({
   boardId,
   sequencePrefix,
   boardMembers,
+  enabledCardTypes,
   onUpdate,
   onDelete,
   onClose,
@@ -67,6 +71,7 @@ export function CardModal({
           sequencePrefix={sequencePrefix}
           boardMembers={boardMembers}
           boardId={boardId}
+          enabledCardTypes={enabledCardTypes}
           onUpdate={onUpdate}
           onDelete={onDelete}
           onClose={onClose}
