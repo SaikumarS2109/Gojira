@@ -356,13 +356,23 @@ export function CardView({
             </div>
           )}
 
-          {/* Comments placeholder */}
+          {/* Comments Section */}
           <div className="mt-8">
             <p className="text-xs font-semibold text-[#7A8699] uppercase tracking-wider mb-2 block">
               Comments
             </p>
-            <div className="bg-[#F4F5F7] border border-dashed border-[#D0D4DC] rounded-lg p-4 text-sm text-[#7A8699] text-center">
-              Coming soon
+            <CommentEditor
+              cardId={card._id}
+              boardMembers={boardMembers}
+              onCommentCreated={() => setCommentsRefresh(prev => prev + 1)}
+            />
+            <div className="mt-4">
+              <CommentList
+                key={commentsRefresh}
+                cardId={card._id}
+                currentUserId={card.assigneeId?._id || ''}
+                onCommentDeleted={() => setCommentsRefresh(prev => prev + 1)}
+              />
             </div>
           </div>
         </div>
@@ -523,23 +533,6 @@ export function CardView({
           >
             Delete card
           </button>
-        </div>
-
-        {/* Comments Section */}
-        <div className="border-t border-[#E0E3E8] pt-4">
-          <CommentEditor
-            cardId={card._id}
-            boardMembers={boardMembers}
-            onCommentCreated={() => setCommentsRefresh(prev => prev + 1)}
-          />
-          <div className="mt-4">
-            <CommentList
-              key={commentsRefresh}
-              cardId={card._id}
-              currentUserId={card.assigneeId?._id || ''}
-              onCommentDeleted={() => setCommentsRefresh(prev => prev + 1)}
-            />
-          </div>
         </div>
       </div>
     </div>
