@@ -47,13 +47,35 @@ function RenderedDescription({ json }: { json: string }) {
   try {
     const content = JSON.parse(json);
     const html = generateHTML(content, [
-      StarterKit.configure({ heading: { levels: [1, 2, 3] } }),
+      StarterKit.configure({
+        heading: { levels: [1, 2, 3] },
+        codeBlock: {
+          HTMLAttributes: {
+            class: 'code-block',
+          },
+        },
+        blockquote: {
+          HTMLAttributes: {
+            class: 'blockquote',
+          },
+        },
+        bulletList: {
+          HTMLAttributes: {
+            class: 'bullet-list',
+          },
+        },
+        orderedList: {
+          HTMLAttributes: {
+            class: 'ordered-list',
+          },
+        },
+      }),
       TipTapLink,
       Placeholder,
     ]);
     return (
       <div
-        className="text-[#172B4D] text-sm space-y-2 [&_h1]:text-xl [&_h1]:font-bold [&_h1]:my-2 [&_h2]:text-lg [&_h2]:font-bold [&_h2]:my-2 [&_h3]:text-base [&_h3]:font-bold [&_h3]:my-2 [&_p]:my-1 [&_ul]:list-disc [&_ul]:pl-5 [&_ol]:list-decimal [&_ol]:pl-5 [&_li]:my-1 [&_blockquote]:border-l-4 [&_blockquote]:border-[#0066CC] [&_blockquote]:pl-4 [&_blockquote]:italic [&_blockquote]:text-[#42526E] [&_blockquote]:my-2 [&_code]:bg-[#F4F5F7] [&_code]:text-[#D93025] [&_code]:px-1.5 [&_code]:py-0.5 [&_code]:rounded [&_code]:font-mono [&_code]:text-xs [&_pre]:bg-[#F4F5F7] [&_pre]:border [&_pre]:border-[#D0D4DC] [&_pre]:rounded [&_pre]:p-3 [&_pre]:overflow-x-auto [&_pre_code]:bg-transparent [&_pre_code]:text-[#172B4D] [&_pre_code]:px-0 [&_pre_code]:py-0 [&_pre_code]:text-xs [&_a]:text-[#0066CC] [&_a]:underline [&_a]:hover:text-[#0052A3]"
+        className="tiptap text-sm"
         dangerouslySetInnerHTML={{ __html: html }}
       />
     );

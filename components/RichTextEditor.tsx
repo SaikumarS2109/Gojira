@@ -29,6 +29,26 @@ export function RichTextEditor({
     extensions: [
       StarterKit.configure({
         heading: { levels: [1, 2, 3] },
+        codeBlock: {
+          HTMLAttributes: {
+            class: 'code-block',
+          },
+        },
+        blockquote: {
+          HTMLAttributes: {
+            class: 'blockquote',
+          },
+        },
+        bulletList: {
+          HTMLAttributes: {
+            class: 'bullet-list',
+          },
+        },
+        orderedList: {
+          HTMLAttributes: {
+            class: 'ordered-list',
+          },
+        },
       }),
       Link.configure({ openOnClick: false }),
       Placeholder.configure({ placeholder }),
