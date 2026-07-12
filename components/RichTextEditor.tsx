@@ -167,10 +167,10 @@ export function RichTextEditor({
         </ToolbarButton>
       </div>
 
-      {/* Editor Content - no border, no padding on the wrapper */}
+      {/* Editor Content - .tiptap class applies CSS styling for live formatted text */}
       <EditorContent
         editor={editor}
-        className="prose prose-sm max-w-none p-3 focus:outline-none min-h-[200px] text-[#172B4D] [&_.ProseMirror]:focus:outline-none [&_.ProseMirror]:p-0"
+        className="tiptap p-3 focus:outline-none min-h-[200px]"
       />
 
       {/* Save/Cancel buttons */}
