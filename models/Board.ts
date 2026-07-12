@@ -27,6 +27,11 @@ const boardSchema = new mongoose.Schema(
         ref: 'User',
       },
     ],
+    enabledCardTypes: {
+      type: [String],
+      enum: ['Epic', 'Story', 'Subtask', 'Task', 'Bug'],
+      default: ['Epic', 'Story', 'Subtask', 'Task', 'Bug'],
+    },
   },
   { timestamps: true }
 );
