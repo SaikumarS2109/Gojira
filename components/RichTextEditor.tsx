@@ -85,7 +85,7 @@ export function RichTextEditor({
   };
 
   return (
-    <div className="rounded-lg overflow-hidden bg-white">
+    <div className="border border-[#D0D4DC] rounded-lg overflow-hidden bg-white">
       {/* Toolbar */}
       <div className="flex flex-wrap gap-1 p-2 border-b border-[#E8EAED] bg-[#F4F5F7]">
         <ToolbarButton
@@ -177,7 +177,14 @@ export function RichTextEditor({
 
       {/* Save/Cancel buttons */}
       {onSave && (
-        <div className="flex gap-2 justify-end p-3 border-t border-[#E8EAED] bg-[#F4F5F7]">
+        <div className="flex gap-2 justify-start p-3">
+          <button
+            onClick={handleSave}
+            disabled={isSaving}
+            className="px-3 py-1.5 text-sm text-white bg-[#0066CC] rounded hover:bg-[#0052A3] transition disabled:opacity-50"
+          >
+            {isSaving ? 'Saving...' : 'Save'}
+          </button>
           {onCancel && (
             <button
               onClick={onCancel}
@@ -187,13 +194,6 @@ export function RichTextEditor({
               Cancel
             </button>
           )}
-          <button
-            onClick={handleSave}
-            disabled={isSaving}
-            className="px-3 py-1.5 text-sm text-white bg-[#0066CC] rounded hover:bg-[#0052A3] transition disabled:opacity-50"
-          >
-            {isSaving ? 'Saving...' : 'Save'}
-          </button>
         </div>
       )}
     </div>
