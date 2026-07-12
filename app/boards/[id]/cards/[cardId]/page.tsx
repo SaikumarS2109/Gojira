@@ -227,7 +227,7 @@ export default function CardFullPage() {
 
           {/* Card content */}
           <main className="flex-1 overflow-hidden flex flex-col">
-            {error && <p className="text-red-400 px-6 pt-4">{error}</p>}
+            {error && <p className="text-[#D93025] px-6 pt-4">{error}</p>}
             {card && board ? (
               <div className="flex-1 bg-white overflow-y-auto p-8">
                 <CardView

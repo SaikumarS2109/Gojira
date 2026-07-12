@@ -144,9 +144,6 @@ export function CardView({
             >
               {ticketId}
             </Link>
-            // <span className="text-xs font-mono font-semibold text-blue-600 bg-blue-50 border border-blue-200 px-2 py-0.5 rounded flex-shrink-0">
-            //   {ticketId}
-            // </span>
           )}
         </div>
         <div className="flex items-center gap-3 flex-shrink-0">
@@ -160,7 +157,7 @@ export function CardView({
               ↗
             </Link>
           )}
-          {onClose && (
+          {onClose ? (
             <button
               onClick={onClose}
               className="text-[#7A8699] hover:text-[#172B4D] text-xl leading-none transition-colors"
@@ -168,6 +165,13 @@ export function CardView({
             >
               ✕
             </button>
+          ) : (
+            <Link
+              href={`/boards/${boardId}`}
+              className="text-sm text-[#42526E] hover:text-[#172B4D] font-medium transition-colors"
+            >
+              ← Back to board
+            </Link>
           )}
         </div>
       </div>
