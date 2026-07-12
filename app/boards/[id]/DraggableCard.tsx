@@ -1,7 +1,9 @@
 'use client';
 
+import Image from 'next/image';
 import { useDraggable } from '@dnd-kit/core';
 import { CSS } from '@dnd-kit/utilities';
+import { CARD_TYPE_ICONS, CardType } from '@/lib/cardTypes';
 
 interface Card {
   _id: string;
@@ -9,6 +11,7 @@ interface Card {
   description: string;
   listId: string;
   ticketNumber?: number;
+  type?: CardType;
   assigneeId?: { _id: string; name: string; email: string };
   storyPoints?: number;
 }
@@ -42,7 +45,18 @@ export function DraggableCard({ card, onCardClick, sequencePrefix }: DraggableCa
       }`}
     >
       {ticketId && (
-        <p className="text-xs font-mono text-[#7A8699] mb-1">{ticketId}</p>
+        <div className="flex items-center gap-1 mb-1">
+          {card.type && (
+            <Image
+              src={CARD_TYPE_ICONS[card.type]}
+              alt={card.type}
+              width={16}
+              height={16}
+              className="flex-shrink-0"
+            />
+          )}
+          <p className="text-xs font-mono text-[#7A8699]">{ticketId}</p>
+        </div>
       )}
       <p className="text-sm text-[#172B4D] font-medium leading-snug">{card.title}</p>
 
