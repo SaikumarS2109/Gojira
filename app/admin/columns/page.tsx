@@ -7,6 +7,7 @@ import { useEffect, useState } from 'react';
 import { usePathname } from 'next/navigation';
 import { AuthGuard } from '@/components/AuthGuard';
 import { RenameColumnModal } from '@/components/RenameColumnModal';
+import { CardType } from '@/lib/cardTypes';
 import {
   DndContext,
   closestCenter,
@@ -117,6 +118,9 @@ export default function AdminColumnsPage() {
   const [renameModalOpen, setRenameModalOpen] = useState(false);
   const [renameColumnId, setRenameColumnId] = useState('');
   const [renameColumnTitle, setRenameColumnTitle] = useState('');
+  const [enabledCardTypes, setEnabledCardTypes] = useState<CardType[]>([]);
+  const [cardTypeChanges, setCardTypeChanges] = useState(false);
+  const [savingCardTypes, setSavingCardTypes] = useState(false);
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -168,11 +172,26 @@ export default function AdminColumnsPage() {
     }
   };
 
+  const fetchCardTypes = async (boardId: string) => {
+    try {
+      const res = await fetch(`/api/boards/${boardId}/card-types`);
+      if (res.ok) {
+        const data = await res.json();
+        setEnabledCardTypes(data.enabledCardTypes || ['Epic', 'Story', 'Subtask', 'Task', 'Bug']);
+        setCardTypeChanges(false);
+      }
+    } catch (err) {
+      console.error('Failed to fetch card types:', err);
+      setEnabledCardTypes(['Epic', 'Story', 'Subtask', 'Task', 'Bug']);
+    }
+  };
+
   const handleBoardChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const boardId = e.target.value;
     setSelectedBoardId(boardId);
     if (boardId) {
       fetchColumns(boardId);
+      fetchCardTypes(boardId);
     }
   };
 
@@ -277,6 +296,36 @@ export default function AdminColumnsPage() {
   };
 
   const hasChanges = JSON.stringify(columns.map(c => c._id)) !== JSON.stringify(savedColumns.map(c => c._id));
+
+  const handleCardTypeToggle = (type: CardType) => {
+    setEnabledCardTypes((prev) =>
+      prev.includes(type)
+        ? prev.filter((t) => t !== type)
+        : [...prev, type]
+    );
+    setCardTypeChanges(true);
+  };
+
+  const handleSaveCardTypes = async () => {
+    setSavingCardTypes(true);
+    try {
+      const res = await fetch(`/api/boards/${selectedBoardId}/card-types`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ enabledCardTypes }),
+      });
+      if (res.ok) {
+        setCardTypeChanges(false);
+      } else {
+        setError('Failed to save card types');
+      }
+    } catch (err) {
+      setError('Failed to save card types');
+      console.error(err);
+    } finally {
+      setSavingCardTypes(false);
+    }
+  };
 
   return (
     <AuthGuard>
@@ -457,6 +506,35 @@ export default function AdminColumnsPage() {
                       </button>
                     </div>
                   </form>
+
+                  {/* Card Types Section */}
+                  <div className="mt-8 pt-8 border-t border-[#E8EAED]">
+                    <h2 className="text-lg font-semibold text-[#172B4D] mb-4">Card Types</h2>
+                    <div className="bg-white border border-[#E0E3E8] rounded-lg p-4">
+                      <div className="space-y-3 mb-4">
+                        {(['Epic', 'Story', 'Subtask', 'Task', 'Bug'] as CardType[]).map((type) => (
+                          <label key={type} className="flex items-center gap-3 cursor-pointer">
+                            <input
+                              type="checkbox"
+                              checked={enabledCardTypes.includes(type)}
+                              onChange={() => handleCardTypeToggle(type)}
+                              className="w-4 h-4 rounded border-[#D0D4DC] text-[#0066CC] cursor-pointer"
+                            />
+                            <span className="text-[#172B4D] font-medium">{type}</span>
+                          </label>
+                        ))}
+                      </div>
+                      {cardTypeChanges && (
+                        <button
+                          onClick={handleSaveCardTypes}
+                          disabled={savingCardTypes}
+                          className="bg-[#0066CC] hover:bg-[#0052A3] disabled:opacity-50 text-white px-4 py-2 text-sm font-medium rounded-md transition"
+                        >
+                          {savingCardTypes ? 'Saving...' : 'Save Card Types'}
+                        </button>
+                      )}
+                    </div>
+                  </div>
                 </div>
               )}
             </div>
