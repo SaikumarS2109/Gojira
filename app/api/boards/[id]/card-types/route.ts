@@ -1,7 +1,7 @@
 import { getServerSession } from 'next-auth';
-import { authOptions } from '@/app/api/auth/[...nextauth]/route';
+import { authOptions } from '@/lib/auth';
 import { Board } from '@/models/Board';
-import dbConnect from '@/lib/dbConnect';
+import { connectDB } from '@/lib/mongodb';
 
 export async function GET(
   request: Request,
@@ -9,7 +9,7 @@ export async function GET(
 ) {
   try {
     const { id } = await params;
-    await dbConnect();
+    await connectDB();
 
     const board = await Board.findById(id).select('enabledCardTypes');
     if (!board) {
@@ -44,7 +44,7 @@ export async function PATCH(
       return Response.json({ error: 'Invalid card types' }, { status: 400 });
     }
 
-    await dbConnect();
+    await connectDB();
 
     const board = await Board.findByIdAndUpdate(
       id,
