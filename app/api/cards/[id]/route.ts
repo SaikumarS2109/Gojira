@@ -50,7 +50,22 @@ export async function PATCH(
 
     const { id } = await params;
     const body = await request.json();
-    const { title, description, listId, order, assigneeId } = body;
+    const { title, description, listId, order, assigneeId, labelIds, storyPoints } = body;
+
+    // Validate storyPoints if provided
+    if ('storyPoints' in body) {
+      const validPoints = [1, 2, 3, 5, 8, 13, 21, null];
+      if (storyPoints !== null && !validPoints.includes(storyPoints)) {
+        return NextResponse.json({ error: 'Invalid story points value' }, { status: 400 });
+      }
+    }
+
+    // Validate labelIds if provided (should be array of valid ObjectIds)
+    if ('labelIds' in body) {
+      if (!Array.isArray(labelIds)) {
+        return NextResponse.json({ error: 'labelIds must be an array' }, { status: 400 });
+      }
+    }
 
     await connectDB();
 
@@ -71,9 +86,12 @@ export async function PATCH(
     if (listId !== undefined) card.listId = listId;
     if (order !== undefined) card.order = order;
     if (assigneeId !== undefined) card.assigneeId = assigneeId || null;
+    if ('labelIds' in body) card.labelIds = labelIds;
+    if ('storyPoints' in body) card.storyPoints = storyPoints;
 
     await card.save();
     await card.populate('assigneeId', 'name email');
+    await card.populate('labelIds', 'name');
 
     return NextResponse.json(card);
   } catch (error) {

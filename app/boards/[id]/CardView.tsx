@@ -10,6 +10,8 @@ interface Card {
   listId: string;
   ticketNumber?: number;
   assigneeId?: { _id: string; name: string; email: string };
+  labelIds?: { _id: string; name: string }[];
+  storyPoints?: number;
 }
 
 interface User {
@@ -22,6 +24,8 @@ interface CardUpdate {
   title?: string;
   description?: string;
   assigneeId?: string;
+  labelIds?: string[];
+  storyPoints?: number | null;
 }
 
 interface CardViewProps {
@@ -48,6 +52,11 @@ export function CardView({
   const [editingDescription, setEditingDescription] = useState(false);
   const [descriptionValue, setDescriptionValue] = useState(card.description);
   const [assigneeId, setAssigneeId] = useState(card.assigneeId?._id || '');
+  const [storyPoints, setStoryPoints] = useState(card.storyPoints || null);
+  const [labelIds, setLabelIds] = useState<string[]>(card.labelIds?.map(l => l._id) || []);
+  const [availableLabels, setAvailableLabels] = useState<{ _id: string; name: string }[]>([]);
+  const [labelSearch, setLabelSearch] = useState('');
+  const [showLabelDropdown, setShowLabelDropdown] = useState(false);
   const [saving, setSaving] = useState<string | null>(null);
   const [fieldError, setFieldError] = useState<string | null>(null);
   const discardTitleRef = useRef(false);
@@ -58,7 +67,24 @@ export function CardView({
     setTitleValue(card.title);
     setDescriptionValue(card.description);
     setAssigneeId(card.assigneeId?._id || '');
+    setStoryPoints(card.storyPoints || null);
+    setLabelIds(card.labelIds?.map(l => l._id) || []);
   }, [card]);
+
+  useEffect(() => {
+    const fetchLabels = async () => {
+      try {
+        const res = await fetch('/api/labels');
+        if (res.ok) {
+          const labels = await res.json();
+          setAvailableLabels(labels);
+        }
+      } catch (err) {
+        console.error('Failed to fetch labels:', err);
+      }
+    };
+    fetchLabels();
+  }, []);
 
   const ticketId = card.ticketNumber != null ? `${sequencePrefix}-${card.ticketNumber}` : null;
 
@@ -94,6 +120,59 @@ export function CardView({
     setAssigneeId(newAssigneeId);
     await saveField({ assigneeId: newAssigneeId || undefined }, 'assignee');
   };
+
+  const handleStoryPointsChange = async (value: string) => {
+    const pointValue = value === '' ? null : parseInt(value, 10);
+    setStoryPoints(pointValue);
+    await saveField({ storyPoints: pointValue }, 'storyPoints');
+  };
+
+  const handleAddLabel = async (label: { _id: string; name: string }) => {
+    if (!labelIds.includes(label._id)) {
+      const newLabelIds = [...labelIds, label._id];
+      setLabelIds(newLabelIds);
+      await saveField({ labelIds: newLabelIds }, 'labels');
+    }
+    setLabelSearch('');
+    setShowLabelDropdown(false);
+  };
+
+  const handleRemoveLabel = async (labelId: string) => {
+    const newLabelIds = labelIds.filter(id => id !== labelId);
+    setLabelIds(newLabelIds);
+    await saveField({ labelIds: newLabelIds }, 'labels');
+  };
+
+  const handleCreateLabel = async () => {
+    if (!labelSearch.trim()) return;
+
+    try {
+      const res = await fetch('/api/labels', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: labelSearch.trim() }),
+      });
+
+      if (res.ok) {
+        const label = await res.json();
+        await handleAddLabel(label);
+        // Refresh labels list
+        const labelsRes = await fetch('/api/labels');
+        if (labelsRes.ok) {
+          setAvailableLabels(await labelsRes.json());
+        }
+      }
+    } catch (err) {
+      console.error('Failed to create label:', err);
+      setFieldError('Failed to create label');
+    }
+  };
+
+  const filteredLabels = availableLabels.filter(
+    label =>
+      !labelIds.includes(label._id) &&
+      label.name.toLowerCase().includes(labelSearch.toLowerCase())
+  );
 
   const handleDelete = async () => {
     if (!confirm('Delete this card? This cannot be undone.')) return;
@@ -147,16 +226,6 @@ export function CardView({
           )}
         </div>
         <div className="flex items-center gap-3 flex-shrink-0">
-          {onClose && (
-            <Link
-              href={`/boards/${boardId}/cards/${card._id}`}
-              target='_blank'
-              className="text-[#7A8699] hover:text-[#42526E] text-base transition-colors"
-              title="Open full page"
-            >
-              ↗
-            </Link>
-          )}
           {onClose ? (
             <button
               onClick={onClose}
@@ -257,16 +326,100 @@ export function CardView({
             </select>
           </div>
 
-          {/* Placeholder: Labels */}
-          <div className="pointer-events-none opacity-40">
+          {/* Labels — wired */}
+          <div>
             <p className="text-xs font-semibold text-[#7A8699] uppercase tracking-wider mb-1">Labels</p>
-            <div className="w-full text-sm text-[#7A8699] bg-[#F4F5F7] rounded px-2 py-1.5">—</div>
+
+            {/* Selected labels as chips */}
+            <div className="flex flex-wrap gap-1 mb-2">
+              {labelIds.map(id => {
+                const label = availableLabels.find(l => l._id === id) ||
+                              card.labelIds?.find(l => l._id === id);
+                if (!label) return null;
+                return (
+                  <span
+                    key={id}
+                    className="inline-flex items-center gap-1 bg-[#E8EAED] text-[#172B4D] px-2 py-0.5 text-xs"
+                  >
+                    {label.name}
+                    <button
+                      onClick={() => handleRemoveLabel(id)}
+                      className="hover:text-[#D93025] cursor-pointer text-xs leading-none"
+                    >
+                      ✕
+                    </button>
+                  </span>
+                );
+              })}
+            </div>
+
+            {/* Label search input */}
+            <div className="relative">
+              <input
+                type="text"
+                value={labelSearch}
+                onChange={(e) => {
+                  setLabelSearch(e.target.value);
+                  setShowLabelDropdown(true);
+                }}
+                onFocus={() => setShowLabelDropdown(true)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    e.preventDefault();
+                    handleCreateLabel();
+                  }
+                }}
+                placeholder="Search or create label..."
+                disabled={saving === 'labels'}
+                className="w-full text-sm border border-[#D0D4DC] rounded px-2 py-1.5 focus:outline-none focus:ring-2 focus:ring-[#0066CC] disabled:opacity-50"
+              />
+
+              {/* Dropdown suggestions */}
+              {showLabelDropdown && (
+                <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-[#D0D4DC] rounded shadow-md z-10 max-h-40 overflow-y-auto">
+                  {filteredLabels.length > 0 ? (
+                    filteredLabels.map(label => (
+                      <button
+                        key={label._id}
+                        onClick={() => handleAddLabel(label)}
+                        className="w-full text-left px-2 py-1.5 text-sm text-[#172B4D] hover:bg-[#F4F5F7] transition"
+                      >
+                        {label.name}
+                      </button>
+                    ))
+                  ) : labelSearch.trim() ? (
+                    <button
+                      onClick={() => handleCreateLabel()}
+                      className="w-full text-left px-2 py-1.5 text-sm text-[#0066CC] hover:bg-[#F4F5F7]"
+                    >
+                      + Create "{labelSearch.trim()}"
+                    </button>
+                  ) : (
+                    <div className="px-2 py-1.5 text-xs text-[#7A8699]">No labels</div>
+                  )}
+                </div>
+              )}
+            </div>
           </div>
 
-          {/* Placeholder: Story Points */}
-          <div className="pointer-events-none opacity-40">
+          {/* Story Points — wired */}
+          <div>
             <p className="text-xs font-semibold text-[#7A8699] uppercase tracking-wider mb-1">Story Points</p>
-            <div className="w-full text-sm text-[#7A8699] bg-[#F4F5F7] rounded px-2 py-1.5">—</div>
+            <select
+              value={storyPoints ?? ''}
+              onChange={(e) => handleStoryPointsChange(e.target.value)}
+              disabled={saving === 'storyPoints'}
+              className="w-full text-sm border border-[#D0D4DC] rounded px-2 py-1.5 focus:outline-none focus:ring-2 focus:ring-[#0066CC] bg-white disabled:opacity-50 cursor-pointer text-[#172B4D]"
+            >
+              <option value="">None</option>
+              <option value="1">1</option>
+              <option value="2">2</option>
+              <option value="3">3</option>
+              <option value="5">5</option>
+              <option value="8">8</option>
+              <option value="13">13</option>
+              <option value="21">21</option>
+            </select>
           </div>
 
           {/* Placeholder: Time Logging */}

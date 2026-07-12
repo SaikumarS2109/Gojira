@@ -39,6 +39,17 @@ const cardSchema = new mongoose.Schema(
     ticketNumber: {
       type: Number,
     },
+    labelIds: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Label',
+      },
+    ],
+    storyPoints: {
+      type: Number,
+      enum: [1, 2, 3, 5, 8, 13, 21, null],
+      default: null,
+    },
   },
   { timestamps: true }
 );

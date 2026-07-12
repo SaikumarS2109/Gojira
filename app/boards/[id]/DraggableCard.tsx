@@ -10,6 +10,7 @@ interface Card {
   listId: string;
   ticketNumber?: number;
   assigneeId?: { _id: string; name: string; email: string };
+  storyPoints?: number;
 }
 
 interface DraggableCardProps {
@@ -57,6 +58,12 @@ export function DraggableCard({ card, onCardClick, sequencePrefix }: DraggableCa
           <span className="text-xs text-[#42526E]">{card.assigneeId.name}</span>
         </div>
       )}
+
+      {/* Story Points badge */}
+      <div className="flex items-center justify-between mt-2 text-xs text-[#7A8699]">
+        <span>SP:</span>
+        <span className="font-semibold text-[#172B4D]">{card.storyPoints ?? "-"}</span>
+      </div>
     </div>
   );
 }
