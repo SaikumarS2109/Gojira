@@ -16,28 +16,16 @@ export function LoginForm() {
 
   useEffect(() => {
     const message = searchParams.get('message');
-    if (message) {
-      setSuccess(message);
-    }
+    if (message) setSuccess(message);
   }, [searchParams]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
     setLoading(true);
-
     try {
-      const result = await signIn('credentials', {
-        email,
-        password,
-        redirect: false,
-      });
-
-      if (!result?.ok) {
-        setError(result?.error || 'Invalid email or password');
-        return;
-      }
-
+      const result = await signIn('credentials', { email, password, redirect: false });
+      if (!result?.ok) { setError(result?.error || 'Invalid email or password'); return; }
       router.push('/boards');
     } catch (err) {
       setError('An error occurred during login');
@@ -48,67 +36,55 @@ export function LoginForm() {
   };
 
   return (
-    <div
-      className="min-h-screen flex items-center justify-center py-12 px-4"
-      style={{ background: 'linear-gradient(135deg, #1a1a2e 0%, #16213e 100%)' }}
-    >
-      <div className="w-full max-w-md bg-white p-8 rounded-xl shadow-2xl">
+    <div className="min-h-screen flex items-center justify-center py-12 px-4 bg-[#F4F5F7]">
+      <div className="w-full max-w-md bg-white p-8 rounded-xl border border-[#E8EAED] shadow-sm">
         <div className="text-center mb-6">
-          <h1 className="text-3xl font-bold text-[#026AA7]">Gojira</h1>
-          <p className="text-gray-500 text-sm mt-1">Log in to your account</p>
+          <h1 className="text-3xl font-bold text-[#0066CC]">Gojira</h1>
+          <p className="text-[#7A8699] text-sm mt-1">Log in to your account</p>
         </div>
 
         {success && (
-          <div className="mb-4 p-3 bg-green-100 text-green-700 rounded-lg text-sm">{success}</div>
+          <div className="mb-4 p-3 bg-green-50 text-green-700 border border-green-200 rounded-lg text-sm">{success}</div>
         )}
-
         {error && (
-          <div className="mb-4 p-3 bg-red-100 text-red-700 rounded-lg text-sm">{error}</div>
+          <div className="mb-4 p-3 bg-red-50 text-[#D93025] border border-red-200 rounded-lg text-sm">{error}</div>
         )}
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
-              Email
-            </label>
+            <label htmlFor="email" className="block text-sm font-medium text-[#42526E] mb-1">Email</label>
             <input
               id="email"
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 border border-[#D0D4DC] rounded-md text-[#172B4D] focus:outline-none focus:ring-2 focus:ring-[#0066CC] focus:border-transparent"
               required
             />
           </div>
-
           <div>
-            <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
-              Password
-            </label>
+            <label htmlFor="password" className="block text-sm font-medium text-[#42526E] mb-1">Password</label>
             <input
               id="password"
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 border border-[#D0D4DC] rounded-md text-[#172B4D] focus:outline-none focus:ring-2 focus:ring-[#0066CC] focus:border-transparent"
               required
             />
           </div>
-
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-[#026AA7] text-white py-2 rounded-lg font-medium hover:bg-blue-700 disabled:opacity-50 transition"
+            className="w-full bg-[#0066CC] hover:bg-[#0052A3] text-white py-2 rounded-md font-medium disabled:opacity-50 transition"
           >
             {loading ? 'Logging in...' : 'Log in'}
           </button>
         </form>
 
-        <p className="mt-4 text-center text-sm text-gray-600">
-          Don't have an account?{' '}
-          <Link href="/signup" className="text-[#026AA7] font-medium hover:underline">
-            Sign up
-          </Link>
+        <p className="mt-4 text-center text-sm text-[#42526E]">
+          Don&apos;t have an account?{' '}
+          <Link href="/signup" className="text-[#0066CC] font-medium hover:underline">Sign up</Link>
         </p>
       </div>
     </div>
