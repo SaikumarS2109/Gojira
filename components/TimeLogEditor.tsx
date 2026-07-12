@@ -54,6 +54,17 @@ export function TimeLogEditor({ cardId, onTimeLogCreated }: TimeLogEditorProps) 
     setIsOpen(false);
   };
 
+  React.useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [isOpen]);
+
   if (!isOpen) {
     return (
       <button
@@ -67,8 +78,8 @@ export function TimeLogEditor({ cardId, onTimeLogCreated }: TimeLogEditorProps) 
 
   return (
     <>
-      <div className="fixed inset-0 bg-black bg-opacity-10 z-40" onClick={handleClose} />
-      <div className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white rounded-lg shadow-md z-50 w-96">
+      <div className="fixed inset-0 bg-black/10 z-40" onClick={handleClose} />
+      <div className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white rounded-lg shadow-md z-50 w-96 max-h-[90vh] overflow-y-auto">
         <div className="p-4 border-b border-[#E8EAED]">
           <h2 className="text-sm font-semibold text-[#172B4D]">Add Work Log</h2>
         </div>
