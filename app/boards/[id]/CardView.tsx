@@ -7,6 +7,7 @@ import { CommentEditor } from '@/components/CommentEditor';
 import { CommentList } from '@/components/CommentList';
 import { TimeLogEditor } from '@/components/TimeLogEditor';
 import { TimeLogList } from '@/components/TimeLogList';
+import { TimeLogSummary } from '@/components/TimeLogSummary';
 import { Tabs } from '@/components/Tabs';
 import { generateHTML } from '@tiptap/core';
 import StarterKit from '@tiptap/starter-kit';
@@ -540,10 +541,10 @@ export function CardView({
             </select>
           </div>
 
-          {/* Placeholder: Time Logging */}
-          <div className="pointer-events-none opacity-40">
+          {/* Time Logging — wired */}
+          <div>
             <h3 className="text-sm font-semibold text-[#172B4D] mb-1">Time Logging</h3>
-            <div className="w-full text-sm text-[#7A8699] bg-[#F4F5F7] rounded px-2 py-1.5">—</div>
+            <TimeLogSummary key={timelogsRefresh} cardId={card._id} />
           </div>
 
           {/* Placeholder: Card Type */}
