@@ -46,16 +46,16 @@ export function DraggableList({
   return (
     <div
       ref={setNodeRef}
-      className={`bg-[#ebecf0] rounded-xl flex flex-col min-w-64 max-w-64 flex-shrink-0 max-h-[calc(100vh-120px)] transition ${
-        isOver ? 'ring-2 ring-blue-400' : ''
+      className={`bg-white border border-[#D0D4DC] rounded-lg flex flex-col min-w-64 max-w-64 flex-shrink-0 max-h-[calc(100vh-120px)] transition ${
+        isOver ? 'ring-2 ring-[#0066CC]' : ''
       }`}
     >
       {/* List Header */}
       <div className="flex justify-between items-center px-3 pt-3 pb-1 group">
-        <h3 className="font-semibold text-sm text-gray-800">{title}</h3>
+        <h3 className="font-semibold text-sm text-[#172B4D]">{title}</h3>
         <button
           onClick={() => onDeleteList(listId)}
-          className="text-gray-400 hover:text-gray-700 opacity-0 group-hover:opacity-100 transition text-sm leading-none p-1 rounded hover:bg-gray-300"
+          className="text-[#7A8699] hover:text-[#D93025] opacity-0 group-hover:opacity-100 transition text-sm leading-none p-1 rounded hover:bg-[#F4F5F7]"
         >
           ✕
         </button>
@@ -67,7 +67,7 @@ export function DraggableList({
           <DraggableCard key={card._id} card={card} onCardClick={onCardClick} sequencePrefix={sequencePrefix} />
         ))}
         {isOver && draggingCardId && (
-          <div className="h-10 rounded-lg border-2 border-dashed border-blue-400 bg-blue-50 opacity-60" />
+          <div className="h-10 rounded-md border-2 border-dashed border-[#0066CC] bg-[#E8F0FE] opacity-60" />
         )}
       </div>
 
@@ -81,25 +81,22 @@ export function DraggableList({
               onChange={(e) => onNewCardTitleChange(e.target.value)}
               placeholder="Enter a title for this card..."
               rows={2}
-              className="w-full px-3 py-2 text-sm rounded-lg border border-blue-400 shadow-sm focus:outline-none resize-none mb-2"
+              className="w-full px-3 py-2 text-sm rounded-md border border-[#0066CC] text-[#172B4D] placeholder-[#7A8699] focus:outline-none resize-none mb-2"
               onKeyDown={(e) => {
-                if (e.key === 'Enter' && !e.shiftKey) {
-                  e.preventDefault();
-                  onCreateCard(e as any);
-                }
+                if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); onCreateCard(e as any); }
               }}
             />
             <div className="flex gap-2 items-center">
               <button
                 type="submit"
-                className="bg-blue-500 text-white px-3 py-1 text-sm rounded hover:bg-blue-600 transition font-medium"
+                className="bg-[#0066CC] hover:bg-[#0052A3] text-white px-3 py-1 text-sm rounded-md transition font-medium"
               >
                 Add card
               </button>
               <button
                 type="button"
                 onClick={() => onAddCard('')}
-                className="text-gray-500 hover:text-gray-700 text-lg leading-none"
+                className="text-[#7A8699] hover:text-[#172B4D] text-lg leading-none transition"
               >
                 ✕
               </button>
@@ -108,7 +105,7 @@ export function DraggableList({
         ) : (
           <button
             onClick={() => onAddCard(listId)}
-            className="w-full text-left text-gray-600 hover:text-gray-800 hover:bg-gray-300/60 text-sm px-2 py-1.5 rounded-lg transition"
+            className="w-full text-left text-[#42526E] hover:text-[#172B4D] hover:bg-[#F4F5F7] text-sm px-2 py-1.5 rounded-md transition"
           >
             + Add a card
           </button>
