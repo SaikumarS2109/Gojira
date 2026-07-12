@@ -119,6 +119,7 @@ export function CardView({
   const [commentsRefresh, setCommentsRefresh] = useState(0);
   const [timelogsRefresh, setTimelogsRefresh] = useState(0);
   const [boardLists, setBoardLists] = useState<{ _id: string; name: string }[]>([]);
+  const [showStatusDropdown, setShowStatusDropdown] = useState(false);
   const discardTitleRef = useRef(false);
   const discardDescRef = useRef(false);
   const labelDropdownRef = useRef<HTMLDivElement>(null);
@@ -450,7 +451,7 @@ export function CardView({
             {/* Status — wired */}
             <div className="relative">
               <button
-                onClick={() => setShowLabelDropdown(!showLabelDropdown)}
+                onClick={() => setShowStatusDropdown(!showStatusDropdown)}
                 className="w-full px-3 py-1.5 text-sm font-medium bg-[#0066CC] text-white rounded flex items-center justify-between hover:bg-[#0052A3] transition disabled:opacity-50"
                 disabled={saving === 'status'}
               >
@@ -459,16 +460,16 @@ export function CardView({
                 </span>
                 <span>▼</span>
               </button>
-              {showLabelDropdown && (
-                <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-[#D0D4DC] rounded shadow-lg z-50 min-w-max">
+              {showStatusDropdown && (
+                <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-[#D0D4DC] rounded shadow-lg z-50 w-full">
                   {boardLists.map((list) => (
                     <button
                       key={list._id}
                       onClick={() => {
                         handleListChange(list._id);
-                        setShowLabelDropdown(false);
+                        setShowStatusDropdown(false);
                       }}
-                      className="w-full text-left px-3 py-2 text-sm text-[#0C0E10] font-medium hover:bg-[#E8EAED] transition block"
+                      className="w-full text-left px-3 py-3 text-sm text-[#172B4D] hover:bg-[#F4F5F7] transition block border-b border-[#E8EAED] last:border-b-0"
                     >
                       {list.name}
                     </button>
