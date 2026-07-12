@@ -208,9 +208,23 @@ export default function BoardDetailPage() {
     }
   };
 
-  const handleUpdateCard = async (updates: { title?: string; description?: string; assigneeId?: string }) => {
+  const handleUpdateCard = async (updates: { title?: string; description?: string; assigneeId?: string; labelIds?: string[]; storyPoints?: number | null; listId?: string }) => {
     if (!selectedCard) return;
     try {
+      if (updates.listId) {
+        // CardView already made the API call for listId; just move card in local state
+        const newListId = updates.listId;
+        const oldListId = selectedCard.listId;
+        const movedCard = { ...selectedCard, listId: newListId };
+        setCards(prev => ({
+          ...prev,
+          [oldListId]: (prev[oldListId] || []).filter(c => c._id !== selectedCard._id),
+          [newListId]: [...(prev[newListId] || []), movedCard],
+        }));
+        setSelectedCard(movedCard);
+        return;
+      }
+
       const res = await fetch(`/api/cards/${selectedCard._id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
@@ -377,6 +391,16 @@ export default function BoardDetailPage() {
                 </Link>
               ))}
             </nav>
+
+            {session?.user?.role === 'admin' && (
+              <Link
+                href="/admin"
+                className="flex items-center gap-2 px-2 py-1.5 mx-2 rounded-lg text-sm transition text-[#42526E] hover:bg-[#F4F5F7] hover:text-[#172B4D]"
+              >
+                <span className="w-3 h-3 rounded-sm flex-shrink-0 bg-[#D93025]" />
+                <span className="truncate">Admin</span>
+              </Link>
+            )}
 
             {/* New board */}
             <div className="w-56 px-2 py-3 border-t border-[#E8EAED]">

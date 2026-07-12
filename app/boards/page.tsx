@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useSession, signOut } from 'next-auth/react';
 import Link from 'next/link';
+
 import { AuthGuard } from '@/components/AuthGuard';
 
 interface Board {
@@ -103,6 +104,14 @@ export default function BoardsPage() {
             >
               {getInitials(session?.user?.name || session?.user?.email || 'U')}
             </div>
+            {session?.user?.role === 'admin' && (
+              <Link
+                href="/admin"
+                className="text-sm text-[#42526E] hover:text-[#172B4D] font-medium transition"
+              >
+                Admin
+              </Link>
+            )}
             <button
               onClick={() => signOut({ redirect: true, callbackUrl: '/login' })}
               className="text-sm text-[#42526E] hover:text-[#172B4D] transition"
