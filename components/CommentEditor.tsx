@@ -32,15 +32,6 @@ export function CommentEditor({
   const [isSaving, setIsSaving] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
 
-  useEffect(() => {
-    if (isExpanded && editor) {
-      setTimeout(() => {
-        editor.view.dom.focus();
-        editor.commands.focus('end');
-      }, 0);
-    }
-  }, [isExpanded, editor]);
-
   const editor = useEditor({
     extensions: [
       StarterKit.configure({
@@ -67,6 +58,15 @@ export function CommentEditor({
       }
     },
   });
+
+  useEffect(() => {
+    if (isExpanded && editor) {
+      setTimeout(() => {
+        editor.view.dom.focus();
+        editor.commands.focus('end');
+      }, 0);
+    }
+  }, [isExpanded, editor]);
 
   if (!editor) return null;
 
