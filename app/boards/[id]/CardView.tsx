@@ -460,7 +460,7 @@ export function CardView({
                 <span>▼</span>
               </button>
               {showLabelDropdown && (
-                <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-[#D0D4DC] rounded shadow-md z-10">
+                <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-[#D0D4DC] rounded shadow-lg z-50 min-w-max">
                   {boardLists.map((list) => (
                     <button
                       key={list._id}
@@ -468,7 +468,7 @@ export function CardView({
                         handleListChange(list._id);
                         setShowLabelDropdown(false);
                       }}
-                      className="w-full text-left px-3 py-2 text-sm text-[#172B4D] hover:bg-[#F4F5F7] transition"
+                      className="w-full text-left px-3 py-2 text-sm text-[#0C0E10] font-medium hover:bg-[#E8EAED] transition block"
                     >
                       {list.name}
                     </button>
