@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { usePathname } from 'next/navigation';
 import { AuthGuard } from '@/components/AuthGuard';
+import { RenameColumnModal } from '@/components/RenameColumnModal';
 import {
   DndContext,
   closestCenter,
@@ -42,12 +43,12 @@ function getInitials(name: string) {
 function SortableColumnItem({
   id,
   column,
-  onRename,
+  onRenameClick,
   onDelete,
 }: {
   id: string;
   column: List;
-  onRename: (columnId: string, newTitle: string) => void;
+  onRenameClick: (columnId: string, columnTitle: string) => void;
   onDelete: (columnId: string) => void;
 }) {
   const {
@@ -84,10 +85,7 @@ function SortableColumnItem({
       </span>
       <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition">
         <button
-          onClick={() => {
-            const newTitle = prompt('Rename column:', column.title);
-            if (newTitle) onRename(id, newTitle);
-          }}
+          onClick={() => onRenameClick(id, column.title)}
           className="text-xs text-[#0066CC] hover:text-[#0052A3] font-medium transition"
         >
           Rename
@@ -116,6 +114,9 @@ export default function AdminColumnsPage() {
   const [error, setError] = useState('');
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [renameModalOpen, setRenameModalOpen] = useState(false);
+  const [renameColumnId, setRenameColumnId] = useState('');
+  const [renameColumnTitle, setRenameColumnTitle] = useState('');
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -200,20 +201,27 @@ export default function AdminColumnsPage() {
     }
   };
 
-  const handleRenameColumn = async (columnId: string, newTitle: string) => {
-    if (!newTitle.trim()) return;
+  const handleOpenRenameModal = (columnId: string, columnTitle: string) => {
+    setRenameColumnId(columnId);
+    setRenameColumnTitle(columnTitle);
+    setRenameModalOpen(true);
+  };
+
+  const handleRenameColumn = async (newTitle: string) => {
+    if (!newTitle.trim() || !renameColumnId) return;
 
     try {
-      const res = await fetch(`/api/lists/${columnId}`, {
+      const res = await fetch(`/api/lists/${renameColumnId}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ title: newTitle }),
       });
       if (!res.ok) throw new Error('Failed to rename column');
       const updated = await res.json();
-      const newColumns = columns.map((c) => (c._id === columnId ? updated : c));
+      const newColumns = columns.map((c) => (c._id === renameColumnId ? updated : c));
       setColumns(newColumns);
       setSavedColumns(newColumns);
+      setRenameModalOpen(false);
     } catch (err) {
       setError('Failed to rename column');
       console.error(err);
@@ -410,7 +418,7 @@ export default function AdminColumnsPage() {
                                 key={column._id}
                                 id={column._id}
                                 column={column}
-                                onRename={handleRenameColumn}
+                                onRenameClick={handleOpenRenameModal}
                                 onDelete={handleDeleteColumn}
                               />
                             ))}
@@ -454,6 +462,13 @@ export default function AdminColumnsPage() {
             </div>
           </div>
         </div>
+
+        <RenameColumnModal
+          isOpen={renameModalOpen}
+          columnTitle={renameColumnTitle}
+          onConfirm={handleRenameColumn}
+          onCancel={() => setRenameModalOpen(false)}
+        />
       </div>
     </AuthGuard>
   );
