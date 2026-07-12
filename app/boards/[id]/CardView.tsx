@@ -396,11 +396,14 @@ export function CardView({
 
             {/* Selected labels as chips + add button */}
             <div className="flex flex-wrap gap-1 items-center">
-              {labelIds.map(id => {
-                const label = availableLabels.find(l => l._id === id) ||
-                              card.labelIds?.find(l => l._id === id);
-                if (!label) return null;
-                return (
+              {labelIds
+                .map(id => {
+                  const label = availableLabels.find(l => l._id === id) ||
+                                card.labelIds?.find(l => l._id === id);
+                  return label ? { id, label } : null;
+                })
+                .filter((item): item is { id: string; label: { _id: string; name: string } } => item !== null)
+                .map(({ id, label }) => (
                   <span
                     key={id}
                     className="inline-flex items-center gap-1 bg-[#E8EAED] text-[#172B4D] px-2 py-0.5 text-xs"
@@ -413,8 +416,7 @@ export function CardView({
                       ✕
                     </button>
                   </span>
-                );
-              })}
+                ))}
 
               {/* Add label button */}
               <button
