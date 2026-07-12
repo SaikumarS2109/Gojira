@@ -85,7 +85,7 @@ export function RichTextEditor({
   };
 
   return (
-    <div className="border border-[#D0D4DC] rounded-lg overflow-hidden bg-white">
+    <div className="rounded-lg overflow-hidden bg-white">
       {/* Toolbar */}
       <div className="flex flex-wrap gap-1 p-2 border-b border-[#E8EAED] bg-[#F4F5F7]">
         <ToolbarButton
@@ -170,7 +170,7 @@ export function RichTextEditor({
       {/* Editor Content - .tiptap class applies CSS styling for live formatted text */}
       <EditorContent
         editor={editor}
-        className="tiptap p-3 focus:outline-none min-h-[200px]"
+        className="tiptap px-4 py-3 focus:outline-none min-h-[200px] text-[#172B4D]"
       />
 
       {/* Save/Cancel buttons */}
