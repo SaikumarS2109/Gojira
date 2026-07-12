@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { RichTextEditor } from '@/components/RichTextEditor';
@@ -9,6 +10,8 @@ import { TimeLogEditor } from '@/components/TimeLogEditor';
 import { TimeLogList } from '@/components/TimeLogList';
 import { TimeLogSummary } from '@/components/TimeLogSummary';
 import { Tabs } from '@/components/Tabs';
+import { TypeChangeModal } from '@/components/TypeChangeModal';
+import { CARD_TYPE_ICONS, CardType } from '@/lib/cardTypes';
 import { generateHTML } from '@tiptap/core';
 import StarterKit from '@tiptap/starter-kit';
 import TipTapLink from '@tiptap/extension-link';
@@ -20,6 +23,7 @@ interface Card {
   description: string;
   listId: string;
   ticketNumber?: number;
+  type?: CardType;
   assigneeId?: { _id: string; name: string; email: string };
   labelIds?: { _id: string; name: string }[];
   storyPoints?: number;
@@ -37,6 +41,7 @@ interface CardUpdate {
   assigneeId?: string;
   labelIds?: string[];
   storyPoints?: number | null;
+  type?: CardType;
   listId?: string;
 }
 
@@ -45,6 +50,7 @@ interface CardViewProps {
   sequencePrefix: string;
   boardMembers: User[];
   boardId: string;
+  enabledCardTypes?: CardType[];
   onUpdate: (updates: CardUpdate) => Promise<void>;
   onDelete: () => Promise<void>;
   onClose?: () => void;
@@ -120,6 +126,8 @@ export function CardView({
   const [timelogsRefresh, setTimelogsRefresh] = useState(0);
   const [boardLists, setBoardLists] = useState<{ _id: string; title: string }[]>([]);
   const [showStatusDropdown, setShowStatusDropdown] = useState(false);
+  const [isTypeChangeModalOpen, setIsTypeChangeModalOpen] = useState(false);
+  const [isUpdatingType, setIsUpdatingType] = useState(false);
   const discardTitleRef = useRef(false);
   const discardDescRef = useRef(false);
   const labelDropdownRef = useRef<HTMLDivElement>(null);
@@ -296,6 +304,15 @@ export function CardView({
     await onDelete();
   };
 
+  const handleTypeChange = async (newType: CardType) => {
+    setIsUpdatingType(true);
+    try {
+      await onUpdate({ type: newType });
+    } finally {
+      setIsUpdatingType(false);
+    }
+  };
+
   const titleComponent = () => {
     return editingTitle ? (
         <input
@@ -331,6 +348,20 @@ export function CardView({
       {/* Header */}
       <div className="flex items-start justify-between gap-2 mb-5">
         <div className="flex items-center gap-2 flex-1 min-w-0">
+          {card.type && (
+            <button
+              onClick={() => setIsTypeChangeModalOpen(true)}
+              className="flex-shrink-0 hover:opacity-70 transition"
+              title="Change card type"
+            >
+              <Image
+                src={CARD_TYPE_ICONS[card.type]}
+                alt={card.type}
+                width={24}
+                height={24}
+              />
+            </button>
+          )}
           {ticketId && (
             <Link
               href={`/boards/${boardId}/cards/${card._id}`}
@@ -609,10 +640,23 @@ export function CardView({
             <TimeLogSummary key={timelogsRefresh} cardId={card._id} />
           </div>
 
-          {/* Placeholder: Card Type */}
-          <div className="pointer-events-none opacity-40">
+          {/* Card Type */}
+          <div>
             <h3 className="text-sm font-semibold text-[#172B4D] mb-1">Card Type</h3>
-            <div className="w-full text-sm text-[#7A8699] bg-[#F4F5F7] rounded px-2 py-1.5">—</div>
+            <button
+              onClick={() => setIsTypeChangeModalOpen(true)}
+              className="flex items-center gap-2 w-full text-sm text-[#172B4D] bg-[#F4F5F7] hover:bg-[#E8EAED] rounded px-2 py-1.5 transition"
+            >
+              {card.type && (
+                <Image
+                  src={CARD_TYPE_ICONS[card.type]}
+                  alt={card.type}
+                  width={16}
+                  height={16}
+                />
+              )}
+              <span>{card.type || 'No type'}</span>
+            </button>
           </div>
 
           {/* Delete */}
@@ -629,9 +673,18 @@ export function CardView({
             <p className="text-xs text-[#D93025]">{fieldError}</p>
           )}
 
-          
+
         </div>
       </div>
+
+      <TypeChangeModal
+        isOpen={isTypeChangeModalOpen}
+        currentType={card.type || 'Story'}
+        enabledTypes={enabledCardTypes || ['Epic', 'Story', 'Subtask', 'Task', 'Bug']}
+        onClose={() => setIsTypeChangeModalOpen(false)}
+        onTypeChange={handleTypeChange}
+        isLoading={isUpdatingType}
+      />
     </div>
   );
 }
