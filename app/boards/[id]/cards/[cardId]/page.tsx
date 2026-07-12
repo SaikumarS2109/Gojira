@@ -135,8 +135,8 @@ export default function CardFullPage() {
   if (loading) {
     return (
       <AuthGuard>
-        <div className="h-screen flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #1a1a2e 0%, #16213e 100%)' }}>
-          <div className="text-white/50">Loading...</div>
+        <div className="h-screen flex items-center justify-center bg-[#F4F5F7]">
+          <div className="text-[#7A8699]">Loading...</div>
         </div>
       </AuthGuard>
     );
@@ -144,27 +144,27 @@ export default function CardFullPage() {
 
   return (
     <AuthGuard>
-      <div className="h-screen flex flex-col overflow-hidden" style={{ background: 'linear-gradient(135deg, #1a1a2e 0%, #16213e 100%)' }}>
+      <div className="h-screen flex flex-col overflow-hidden bg-[#F4F5F7]">
         {/* Top nav */}
-        <nav className="bg-black/20 backdrop-blur border-b border-white/10 px-4 py-2 flex justify-between items-center flex-shrink-0">
+        <nav className="bg-white border-b border-[#E8EAED] px-4 py-2 flex justify-between items-center flex-shrink-0">
           <div className="flex items-center gap-3">
             <button
               onClick={() => setSidebarOpen(!sidebarOpen)}
-              className="text-white/60 hover:text-white transition p-1 rounded hover:bg-white/10"
+              className="text-[#42526E] hover:text-[#172B4D] transition p-1 rounded hover:bg-[#F4F5F7]"
             >
               <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
                 <path d="M2 3h12v1.5H2V3zm0 4.25h12v1.5H2v-1.5zm0 4.25h12V13H2v-1.5z" />
               </svg>
             </button>
-            <span className="text-white font-bold text-lg tracking-tight">Gojira</span>
+            <span className="font-bold text-lg text-[#0066CC] tracking-tight">Gojira</span>
           </div>
           <div className="flex items-center gap-3">
-            <div className="w-7 h-7 rounded-full bg-blue-400 text-white text-xs flex items-center justify-center font-bold">
+            <div className="w-7 h-7 rounded-full bg-[#0066CC] text-white text-xs flex items-center justify-center font-bold">
               {getInitials(session?.user?.name || session?.user?.email || 'U')}
             </div>
             <button
               onClick={() => signOut({ redirect: true, callbackUrl: '/login' })}
-              className="text-white/60 hover:text-white text-sm transition"
+              className="text-[#42526E] hover:text-[#172B4D] text-sm transition"
             >
               Logout
             </button>
@@ -173,8 +173,8 @@ export default function CardFullPage() {
 
         <div className="flex flex-1 overflow-hidden">
           {/* Sidebar */}
-          <aside className={`flex-shrink-0 bg-black/20 backdrop-blur border-r border-white/10 flex flex-col overflow-hidden transition-all duration-200 ease-in-out ${sidebarOpen ? 'w-56' : 'w-0'}`}>
-            <div className="w-56 px-3 pt-4 pb-1 text-xs font-semibold text-white/40 uppercase tracking-wider whitespace-nowrap">
+          <aside className={`flex-shrink-0 bg-white border-r border-[#E8EAED] flex flex-col overflow-hidden transition-all duration-200 ease-in-out ${sidebarOpen ? 'w-56' : 'w-0'}`}>
+            <div className="w-56 px-3 pt-4 pb-1 text-xs font-semibold text-[#7A8699] uppercase tracking-wider whitespace-nowrap">
               Boards
             </div>
             <nav className="w-56 flex-1 px-2 py-1 space-y-0.5 overflow-y-auto">
@@ -184,8 +184,8 @@ export default function CardFullPage() {
                   href={`/boards/${b._id}`}
                   className={`flex items-center gap-2 px-2 py-1.5 rounded-lg text-sm transition ${
                     b._id === boardId
-                      ? 'bg-white/20 text-white font-medium'
-                      : 'text-white/70 hover:bg-white/10 hover:text-white'
+                      ? 'bg-[#E8F0FE] text-[#0066CC] font-medium'
+                      : 'text-[#42526E] hover:bg-[#F4F5F7] hover:text-[#172B4D]'
                   }`}
                 >
                   <span className={`w-3 h-3 rounded-sm flex-shrink-0 ${getBoardColor(b._id)}`} />
@@ -193,7 +193,7 @@ export default function CardFullPage() {
                 </Link>
               ))}
             </nav>
-            <div className="w-56 px-2 py-3 border-t border-white/10">
+            <div className="w-56 px-2 py-3 border-t border-[#E8EAED]">
               {showNewBoardForm ? (
                 <form onSubmit={handleCreateBoard} className="space-y-2">
                   <input
@@ -202,7 +202,7 @@ export default function CardFullPage() {
                     value={newBoardTitle}
                     onChange={(e) => { setNewBoardTitle(e.target.value); setNewBoardPrefix(suggestPrefix(e.target.value)); }}
                     placeholder="Board name"
-                    className="w-full px-2 py-1.5 text-sm rounded-lg bg-white/10 text-white placeholder-white/40 border border-white/20 focus:outline-none focus:border-white/50"
+                    className="w-full px-2 py-1.5 text-sm rounded-lg bg-white text-[#172B4D] placeholder-[#7A8699] border border-[#D0D4DC] focus:outline-none focus:ring-2 focus:ring-[#0066CC] focus:border-transparent"
                     onKeyDown={(e) => { if (e.key === 'Escape') { setShowNewBoardForm(false); setNewBoardTitle(''); setNewBoardPrefix(''); } }}
                   />
                   <input
@@ -210,15 +210,15 @@ export default function CardFullPage() {
                     value={newBoardPrefix}
                     onChange={(e) => setNewBoardPrefix(e.target.value.toUpperCase().replace(/[^A-Z]/g, '').slice(0, 8))}
                     placeholder="Prefix e.g. GENSYS"
-                    className="w-full px-2 py-1.5 text-sm rounded-lg bg-white/10 text-white placeholder-white/40 border border-white/20 focus:outline-none focus:border-white/50 font-mono"
+                    className="w-full px-2 py-1.5 text-sm rounded-lg bg-white text-[#172B4D] placeholder-[#7A8699] border border-[#D0D4DC] focus:outline-none focus:ring-2 focus:ring-[#0066CC] focus:border-transparent font-mono"
                   />
                   <div className="flex gap-2">
-                    <button type="submit" className="flex-1 bg-blue-500 hover:bg-blue-600 text-white text-xs py-1 rounded-lg transition">Create</button>
-                    <button type="button" onClick={() => { setShowNewBoardForm(false); setNewBoardTitle(''); setNewBoardPrefix(''); }} className="text-white/50 hover:text-white text-xs transition">✕</button>
+                    <button type="submit" className="flex-1 bg-[#0066CC] hover:bg-[#0052A3] text-white text-xs py-1 rounded-md transition">Create</button>
+                    <button type="button" onClick={() => { setShowNewBoardForm(false); setNewBoardTitle(''); setNewBoardPrefix(''); }} className="text-[#7A8699] hover:text-[#172B4D] text-xs transition">✕</button>
                   </div>
                 </form>
               ) : (
-                <button onClick={() => setShowNewBoardForm(true)} className="w-full text-left text-white/50 hover:text-white hover:bg-white/10 text-sm px-2 py-1.5 rounded-lg transition">
+                <button onClick={() => setShowNewBoardForm(true)} className="w-full text-left text-[#42526E] hover:text-[#172B4D] hover:bg-[#F4F5F7] text-sm px-2 py-1.5 rounded-lg transition">
                   + New board
                 </button>
               )}
