@@ -235,6 +235,7 @@ export default function CardFullPage() {
                   sequencePrefix={board.sequencePrefix || ''}
                   boardMembers={boardMembers}
                   boardId={boardId}
+                  enabledCardTypes={(board.enabledCardTypes as any) || ['Epic', 'Story', 'Subtask', 'Task', 'Bug']}
                   onUpdate={handleUpdate}
                   onDelete={handleDelete}
                 />

@@ -146,13 +146,13 @@ export default function BoardDetailPage() {
 
   const handleCreateCard = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newCardTitle.trim() || !selectedListId || !selectedCardType) return;
+    if (!newCardTitle.trim() || !selectedListId) return;
 
     try {
       const res = await fetch('/api/cards', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ listId: selectedListId, title: newCardTitle, type: selectedCardType }),
+        body: JSON.stringify({ listId: selectedListId, title: newCardTitle, type: selectedCardType || 'Story' }),
       });
       if (!res.ok) throw new Error('Failed to create card');
       const newCard = await res.json();
@@ -519,6 +519,7 @@ export default function BoardDetailPage() {
           boardId={boardId}
           sequencePrefix={board?.sequencePrefix || ''}
           boardMembers={boardMembers}
+          enabledCardTypes={(board?.enabledCardTypes as any) || ['Epic', 'Story', 'Subtask', 'Task', 'Bug']}
           onUpdate={handleUpdateCard}
           onDelete={handleDeleteCardFromModal}
           onClose={() => setSelectedCard(null)}

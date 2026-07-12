@@ -102,6 +102,7 @@ export function CardView({
   sequencePrefix,
   boardMembers,
   boardId,
+  enabledCardTypes,
   onUpdate,
   onDelete,
   onClose,
