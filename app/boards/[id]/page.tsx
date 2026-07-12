@@ -302,8 +302,8 @@ export default function BoardDetailPage() {
   if (loading) {
     return (
       <AuthGuard>
-        <div className="h-screen flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #1a1a2e 0%, #16213e 100%)' }}>
-          <div className="text-white/50">Loading...</div>
+        <div className="h-screen flex items-center justify-center bg-[#F4F5F7]">
+          <div className="text-[#7A8699]">Loading...</div>
         </div>
       </AuthGuard>
     );
@@ -311,14 +311,14 @@ export default function BoardDetailPage() {
 
   return (
     <AuthGuard>
-      <div className="h-screen flex flex-col overflow-hidden" style={{ background: 'linear-gradient(135deg, #1a1a2e 0%, #16213e 100%)' }}>
+      <div className="h-screen flex flex-col overflow-hidden bg-[#F4F5F7]">
 
         {/* Top nav — slim */}
-        <nav className="bg-black/20 backdrop-blur border-b border-white/10 px-4 py-2 flex justify-between items-center flex-shrink-0">
+        <nav className="bg-white border-b border-[#E8EAED] px-4 py-2 flex justify-between items-center flex-shrink-0">
           <div className="flex items-center gap-3">
             <button
               onClick={() => setSidebarOpen(!sidebarOpen)}
-              className="text-white/60 hover:text-white transition p-1 rounded hover:bg-white/10"
+              className="text-[#42526E] hover:text-[#172B4D] transition p-1 rounded hover:bg-[#F4F5F7]"
               title={sidebarOpen ? 'Collapse sidebar' : 'Expand sidebar'}
             >
               <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
@@ -329,18 +329,18 @@ export default function BoardDetailPage() {
                 )}
               </svg>
             </button>
-            <span className="text-white font-bold text-lg tracking-tight">Gojira</span>
+            <span className="font-bold text-lg text-[#0066CC] tracking-tight">Gojira</span>
           </div>
           <div className="flex items-center gap-3">
             <div
-              className="w-7 h-7 rounded-full bg-blue-400 text-white text-xs flex items-center justify-center font-bold"
+              className="w-7 h-7 rounded-full bg-[#0066CC] text-white text-xs flex items-center justify-center font-bold"
               title={session?.user?.name || session?.user?.email || ''}
             >
               {getInitials(session?.user?.name || session?.user?.email || 'U')}
             </div>
             <button
               onClick={() => signOut({ redirect: true, callbackUrl: '/login' })}
-              className="text-white/60 hover:text-white text-sm transition"
+              className="text-[#42526E] hover:text-[#172B4D] text-sm transition"
             >
               Logout
             </button>
@@ -353,23 +353,23 @@ export default function BoardDetailPage() {
 
           {/* Sidebar */}
           <aside
-            className={`flex-shrink-0 bg-black/20 backdrop-blur border-r border-white/10 flex flex-col overflow-hidden transition-all duration-200 ease-in-out ${
+            className={`flex-shrink-0 bg-white border-r border-[#E8EAED] flex flex-col overflow-hidden transition-all duration-200 ease-in-out ${
               sidebarOpen ? 'w-56' : 'w-0'
             }`}
           >
-            <div className="w-56 px-3 pt-4 pb-1 text-xs font-semibold text-white/40 uppercase tracking-wider whitespace-nowrap">
+            <div className="w-56 px-3 pt-4 pb-1 text-xs font-semibold text-[#7A8699] uppercase tracking-wider whitespace-nowrap">
               Boards
             </div>
 
-            <nav className="w-56 flex-1 px-2 py-1 space-y-0.5">
+            <nav className="w-56 flex-1 px-2 py-1 space-y-0.5 overflow-y-auto">
               {allBoards.map((b) => (
                 <Link
                   key={b._id}
                   href={`/boards/${b._id}`}
                   className={`flex items-center gap-2 px-2 py-1.5 rounded-lg text-sm transition ${
                     b._id === boardId
-                      ? 'bg-white/20 text-white font-medium'
-                      : 'text-white/70 hover:bg-white/10 hover:text-white'
+                      ? 'bg-[#E8F0FE] text-[#0066CC] font-medium'
+                      : 'text-[#42526E] hover:bg-[#F4F5F7] hover:text-[#172B4D]'
                   }`}
                 >
                   <span className={`w-3 h-3 rounded-sm flex-shrink-0 ${getBoardColor(b._id)}`} />
@@ -379,42 +379,33 @@ export default function BoardDetailPage() {
             </nav>
 
             {/* New board */}
-            <div className="w-56 px-2 py-3 border-t border-white/10">
+            <div className="w-56 px-2 py-3 border-t border-[#E8EAED]">
               {showNewBoardForm ? (
                 <form onSubmit={handleCreateBoardFromSidebar} className="space-y-2">
                   <input
                     autoFocus
                     type="text"
                     value={newBoardTitle}
-                    onChange={(e) => {
-                      setNewBoardTitle(e.target.value);
-                      setNewBoardPrefix(suggestPrefix(e.target.value));
-                    }}
+                    onChange={(e) => { setNewBoardTitle(e.target.value); setNewBoardPrefix(suggestPrefix(e.target.value)); }}
                     placeholder="Board name"
-                    className="w-full px-2 py-1.5 text-sm rounded-lg bg-white/10 text-white placeholder-white/40 border border-white/20 focus:outline-none focus:border-white/50"
-                    onKeyDown={(e) => {
-                      if (e.key === 'Escape') {
-                        setShowNewBoardForm(false);
-                        setNewBoardTitle('');
-                        setNewBoardPrefix('');
-                      }
-                    }}
+                    className="w-full px-2 py-1.5 text-sm rounded-md bg-white text-[#172B4D] placeholder-[#7A8699] border border-[#D0D4DC] focus:outline-none focus:ring-2 focus:ring-[#0066CC] focus:border-transparent"
+                    onKeyDown={(e) => { if (e.key === 'Escape') { setShowNewBoardForm(false); setNewBoardTitle(''); setNewBoardPrefix(''); } }}
                   />
                   <input
                     type="text"
                     value={newBoardPrefix}
                     onChange={(e) => setNewBoardPrefix(e.target.value.toUpperCase().replace(/[^A-Z]/g, '').slice(0, 8))}
                     placeholder="Prefix e.g. GENSYS"
-                    className="w-full px-2 py-1.5 text-sm rounded-lg bg-white/10 text-white placeholder-white/40 border border-white/20 focus:outline-none focus:border-white/50 font-mono"
+                    className="w-full px-2 py-1.5 text-sm rounded-md bg-white text-[#172B4D] placeholder-[#7A8699] border border-[#D0D4DC] focus:outline-none focus:ring-2 focus:ring-[#0066CC] focus:border-transparent font-mono"
                   />
                   <div className="flex gap-2">
-                    <button type="submit" className="flex-1 bg-blue-500 hover:bg-blue-600 text-white text-xs py-1 rounded-lg transition">
+                    <button type="submit" className="flex-1 bg-[#0066CC] hover:bg-[#0052A3] text-white text-xs py-1 rounded-md transition">
                       Create
                     </button>
                     <button
                       type="button"
                       onClick={() => { setShowNewBoardForm(false); setNewBoardTitle(''); setNewBoardPrefix(''); }}
-                      className="text-white/50 hover:text-white text-xs transition"
+                      className="text-[#7A8699] hover:text-[#172B4D] text-xs transition"
                     >
                       ✕
                     </button>
@@ -423,7 +414,7 @@ export default function BoardDetailPage() {
               ) : (
                 <button
                   onClick={() => setShowNewBoardForm(true)}
-                  className="w-full text-left text-white/50 hover:text-white hover:bg-white/10 text-sm px-2 py-1.5 rounded-lg transition"
+                  className="w-full text-left text-[#42526E] hover:text-[#172B4D] hover:bg-[#F4F5F7] text-sm px-2 py-1.5 rounded-lg transition"
                 >
                   + New board
                 </button>
@@ -438,14 +429,14 @@ export default function BoardDetailPage() {
             <div className="flex-shrink-0 px-5 pt-4 pb-2">
               <div className="flex items-center justify-between">
                 <div>
-                  <h1 className="text-white text-2xl font-bold">{board?.title}</h1>
+                  <h1 className="text-[#172B4D] text-2xl font-bold">{board?.title}</h1>
                   {boardMembers.length > 0 && (
                     <div className="flex items-center gap-1 mt-1.5">
                       {boardMembers.slice(0, 5).map((member) => (
                         <div
                           key={member._id}
                           title={member.name}
-                          className="w-6 h-6 rounded-full bg-white/30 border border-white/50 text-white text-xs flex items-center justify-center font-bold"
+                          className="w-6 h-6 rounded-full bg-[#E8F0FE] border border-[#D0D4DC] text-[#0066CC] text-xs flex items-center justify-center font-bold"
                         >
                           {getInitials(member.name)}
                         </div>
@@ -455,7 +446,7 @@ export default function BoardDetailPage() {
                 </div>
                 <button
                   onClick={() => setShowMembers(!showMembers)}
-                  className="text-white/70 hover:text-white text-sm bg-white/10 hover:bg-white/20 px-3 py-1.5 rounded-lg transition"
+                  className="text-[#42526E] hover:text-[#172B4D] text-sm bg-[#F4F5F7] hover:bg-[#E8EAED] border border-[#D0D4DC] px-3 py-1.5 rounded-md transition"
                 >
                   Members
                 </button>
@@ -463,10 +454,10 @@ export default function BoardDetailPage() {
 
               {/* Members panel */}
               {showMembers && (
-                <div className="mt-3 bg-white/10 backdrop-blur rounded-xl p-3 max-w-sm">
+                <div className="mt-3 bg-white border border-[#E8EAED] rounded-xl p-3 max-w-sm shadow-sm">
                   <div className="flex flex-wrap gap-1.5 mb-2">
                     {boardMembers.map((member) => (
-                      <div key={member._id} className="bg-white/20 text-white px-2 py-0.5 rounded-full text-xs">
+                      <div key={member._id} className="bg-[#F4F5F7] text-[#42526E] border border-[#E8EAED] px-2 py-0.5 rounded-full text-xs">
                         {member.name}
                       </div>
                     ))}
@@ -477,13 +468,13 @@ export default function BoardDetailPage() {
                       value={newMemberEmail}
                       onChange={(e) => setNewMemberEmail(e.target.value)}
                       placeholder="Add member by email"
-                      className="flex-1 px-2 py-1 text-xs rounded-lg bg-white/10 text-white placeholder-white/40 border border-white/20 focus:outline-none focus:border-white/50"
+                      className="flex-1 px-2 py-1 text-xs rounded-md border border-[#D0D4DC] text-[#172B4D] placeholder-[#7A8699] focus:outline-none focus:ring-2 focus:ring-[#0066CC] focus:border-transparent"
                     />
-                    <button type="submit" className="bg-white text-gray-800 px-3 py-1 text-xs rounded-lg font-medium hover:bg-white/90 transition">
+                    <button type="submit" className="bg-[#0066CC] hover:bg-[#0052A3] text-white px-3 py-1 text-xs rounded-md font-medium transition">
                       Add
                     </button>
                   </form>
-                  {error && <p className="text-red-300 text-xs mt-1">{error}</p>}
+                  {error && <p className="text-[#D93025] text-xs mt-1">{error}</p>}
                 </div>
               )}
             </div>
@@ -514,32 +505,29 @@ export default function BoardDetailPage() {
                     {/* Add list */}
                     <div className="min-w-64 flex-shrink-0">
                       {showAddList ? (
-                        <div className="bg-white/10 backdrop-blur rounded-xl p-3">
+                        <div className="bg-white border border-[#D0D4DC] rounded-lg p-3 shadow-sm">
                           <input
                             type="text"
                             autoFocus
                             value={newListTitle}
                             onChange={(e) => setNewListTitle(e.target.value)}
                             placeholder="Enter list name"
-                            className="w-full px-3 py-2 text-sm rounded-lg bg-white text-gray-800 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400 mb-2"
+                            className="w-full px-3 py-2 text-sm rounded-md border border-[#D0D4DC] text-[#172B4D] placeholder-[#7A8699] focus:outline-none focus:ring-2 focus:ring-[#0066CC] focus:border-transparent mb-2"
                             onKeyDown={(e) => {
                               if (e.key === 'Enter') handleCreateList(e as unknown as React.FormEvent);
-                              if (e.key === 'Escape') {
-                                setShowAddList(false);
-                                setNewListTitle('');
-                              }
+                              if (e.key === 'Escape') { setShowAddList(false); setNewListTitle(''); }
                             }}
                           />
                           <div className="flex gap-2">
                             <button
                               onClick={(e) => handleCreateList(e as unknown as React.FormEvent)}
-                              className="bg-blue-500 text-white px-3 py-1 text-sm rounded hover:bg-blue-600 transition"
+                              className="bg-[#0066CC] hover:bg-[#0052A3] text-white px-3 py-1 text-sm rounded-md transition"
                             >
                               Add list
                             </button>
                             <button
                               onClick={() => setShowAddList(false)}
-                              className="text-white/70 hover:text-white text-sm transition"
+                              className="text-[#7A8699] hover:text-[#172B4D] text-sm transition"
                             >
                               ✕
                             </button>
@@ -548,7 +536,7 @@ export default function BoardDetailPage() {
                       ) : (
                         <button
                           onClick={() => setShowAddList(true)}
-                          className="w-full text-left text-white/80 hover:text-white bg-white/10 hover:bg-white/20 backdrop-blur rounded-xl px-4 py-3 text-sm font-medium transition"
+                          className="w-full text-left text-[#42526E] hover:text-[#172B4D] bg-white border border-[#D0D4DC] hover:border-[#0066CC] rounded-lg px-4 py-3 text-sm font-medium transition shadow-sm"
                         >
                           + Add a list
                         </button>
