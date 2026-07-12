@@ -2,6 +2,11 @@
 
 import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
+import { RichTextEditor } from '@/components/RichTextEditor';
+import { generateHTML } from '@tiptap/core';
+import StarterKit from '@tiptap/starter-kit';
+import TipTapLink from '@tiptap/extension-link';
+import Placeholder from '@tiptap/extension-placeholder';
 
 interface Card {
   _id: string;
@@ -38,6 +43,25 @@ interface CardViewProps {
   onClose?: () => void;
 }
 
+function RenderedDescription({ json }: { json: string }) {
+  try {
+    const content = JSON.parse(json);
+    const html = generateHTML(content, [
+      StarterKit.configure({ heading: { levels: [1, 2, 3] } }),
+      TipTapLink,
+      Placeholder,
+    ]);
+    return (
+      <div
+        className="prose prose-sm max-w-none text-[#172B4D]"
+        dangerouslySetInnerHTML={{ __html: html }}
+      />
+    );
+  } catch {
+    return <span className="text-[#7A8699]">Invalid content</span>;
+  }
+}
+
 export function CardView({
   card,
   sequencePrefix,
@@ -50,7 +74,11 @@ export function CardView({
   const [editingTitle, setEditingTitle] = useState(false);
   const [titleValue, setTitleValue] = useState(card.title);
   const [editingDescription, setEditingDescription] = useState(false);
-  const [descriptionValue, setDescriptionValue] = useState(card.description);
+  const [descriptionValue, setDescriptionValue] = useState<string>(
+    card.description && card.description.trim() && card.description !== '{}'
+      ? card.description
+      : ''
+  );
   const [assigneeId, setAssigneeId] = useState(card.assigneeId?._id || '');
   const [storyPoints, setStoryPoints] = useState(card.storyPoints || null);
   const [labelIds, setLabelIds] = useState<string[]>(card.labelIds?.map(l => l._id) || []);
@@ -61,11 +89,16 @@ export function CardView({
   const [fieldError, setFieldError] = useState<string | null>(null);
   const discardTitleRef = useRef(false);
   const discardDescRef = useRef(false);
+  const labelDropdownRef = useRef<HTMLDivElement>(null);
 
   // Sync local state when card prop changes (e.g. parent refreshes)
   useEffect(() => {
     setTitleValue(card.title);
-    setDescriptionValue(card.description);
+    setDescriptionValue(
+      card.description && card.description.trim() && card.description !== '{}'
+        ? card.description
+        : ''
+    );
     setAssigneeId(card.assigneeId?._id || '');
     setStoryPoints(card.storyPoints || null);
     setLabelIds(card.labelIds?.map(l => l._id) || []);
@@ -85,6 +118,22 @@ export function CardView({
     };
     fetchLabels();
   }, []);
+
+  useEffect(() => {
+    if (!showLabelDropdown) return;
+
+    const handleClickOutside = (e: MouseEvent) => {
+      if (labelDropdownRef.current && !labelDropdownRef.current.contains(e.target as Node)) {
+        setShowLabelDropdown(false);
+      }
+    };
+
+    setTimeout(() => {
+      document.addEventListener('click', handleClickOutside);
+    }, 0);
+
+    return () => document.removeEventListener('click', handleClickOutside);
+  }, [showLabelDropdown]);
 
   const ticketId = card.ticketNumber != null ? `${sequencePrefix}-${card.ticketNumber}` : null;
 
@@ -256,34 +305,25 @@ export function CardView({
             Acceptance Criteria
           </p>
           {editingDescription ? (
-            <textarea
-              autoFocus
-              value={descriptionValue}
-              onChange={(e) => setDescriptionValue(e.target.value)}
-              onBlur={handleSaveDescription}
-              onKeyDown={(e) => {
-                if (e.key === 'Escape') {
-                  e.stopPropagation();
-                  e.nativeEvent.stopImmediatePropagation();
-                  discardDescRef.current = true;
-                  setDescriptionValue(card.description);
-                  setEditingDescription(false);
-                }
-                if (e.ctrlKey && e.key === 'Enter') {
-                  e.preventDefault();
-                  handleSaveDescription();
-                }
-              }}
-              rows={8}
-              className="w-full text-sm text-[#172B4D] border border-[#0066CC] rounded-lg p-3 focus:outline-none resize-none"
-              placeholder="Add a description... (Ctrl+Enter to save)"
-            />
+            <div className="w-full">
+              <RichTextEditor
+                value={descriptionValue}
+                onChange={(json) => setDescriptionValue(json)}
+                onBlur={handleSaveDescription}
+                placeholder="Add a description..."
+              />
+              <div className="mt-2 text-xs text-[#7A8699]">
+                Click outside to save
+              </div>
+            </div>
           ) : (
             <div
               onClick={() => setEditingDescription(true)}
-              className="min-h-32 text-sm text-[#172B4D] cursor-text hover:bg-[#F4F5F7] rounded-lg p-3 border border-transparent hover:border-[#E8EAED] transition whitespace-pre-wrap"
+              className="min-h-32 text-sm text-[#172B4D] cursor-text hover:bg-[#F4F5F7] rounded-lg p-3 border border-transparent hover:border-[#E8EAED] transition"
             >
-              {descriptionValue || (
+              {descriptionValue && descriptionValue !== '{}' ? (
+                <RenderedDescription json={descriptionValue} />
+              ) : (
                 <span className="text-[#7A8699]">Click to add a description...</span>
               )}
             </div>
@@ -327,7 +367,7 @@ export function CardView({
           </div>
 
           {/* Labels — wired */}
-          <div>
+          <div className="relative" ref={labelDropdownRef}>
             <p className="text-xs font-semibold text-[#7A8699] uppercase tracking-wider mb-1">Labels</p>
 
             {/* Selected labels as chips + add button */}
@@ -353,61 +393,62 @@ export function CardView({
               })}
 
               {/* Add label button */}
-              <div className="relative">
-                <button
-                  onClick={() => setShowLabelDropdown(!showLabelDropdown)}
-                  disabled={saving === 'labels'}
-                  className="inline-flex items-center justify-center w-6 h-6 bg-[#E8EAED] text-[#172B4D] text-sm font-semibold rounded hover:bg-[#D0D4DC] transition disabled:opacity-50"
-                  title="Add label"
-                >
-                  +
-                </button>
-
-                {/* Dropdown suggestions */}
-                {showLabelDropdown && (
-                  <div className="absolute top-full left-0 mt-1 bg-white border border-[#D0D4DC] rounded shadow-md z-10 min-w-48 max-h-48 overflow-y-auto">
-                    <div className="p-2 border-b border-[#E8EAED]">
-                      <input
-                        autoFocus
-                        type="text"
-                        value={labelSearch}
-                        onChange={(e) => setLabelSearch(e.target.value)}
-                        onKeyDown={(e) => {
-                          if (e.key === 'Enter') {
-                            e.preventDefault();
-                            handleCreateLabel();
-                          }
-                        }}
-                        placeholder="Search or create..."
-                        className="w-full text-sm border border-[#D0D4DC] rounded px-2 py-1.5 focus:outline-none focus:ring-2 focus:ring-[#0066CC]"
-                      />
-                    </div>
-                    <div>
-                      {filteredLabels.length > 0 ? (
-                        filteredLabels.map(label => (
-                          <button
-                            key={label._id}
-                            onClick={() => handleAddLabel(label)}
-                            className="w-full text-left px-2 py-1.5 text-sm text-[#172B4D] hover:bg-[#F4F5F7] transition"
-                          >
-                            {label.name}
-                          </button>
-                        ))
-                      ) : labelSearch.trim() ? (
-                        <button
-                          onClick={() => handleCreateLabel()}
-                          className="w-full text-left px-2 py-1.5 text-sm text-[#0066CC] hover:bg-[#F4F5F7]"
-                        >
-                          + Create "{labelSearch.trim()}"
-                        </button>
-                      ) : (
-                        <div className="px-2 py-1.5 text-xs text-[#7A8699]">No labels</div>
-                      )}
-                    </div>
-                  </div>
-                )}
-              </div>
+              <button
+                onClick={() => setShowLabelDropdown(!showLabelDropdown)}
+                disabled={saving === 'labels'}
+                className="inline-flex items-center justify-center w-6 h-6 bg-[#E8EAED] text-[#172B4D] text-sm font-semibold rounded hover:bg-[#D0D4DC] transition disabled:opacity-50"
+                title="Add label"
+              >
+                +
+              </button>
             </div>
+
+            {/* Dropdown suggestions */}
+            {showLabelDropdown && (
+              <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-[#D0D4DC] rounded shadow-md z-10 max-h-48 overflow-y-auto">
+                <div className="p-2 border-b border-[#E8EAED]">
+                  <input
+                    autoFocus
+                    type="text"
+                    value={labelSearch}
+                    onChange={(e) => setLabelSearch(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        e.preventDefault();
+                        handleCreateLabel();
+                      }
+                    }}
+                    onBlur={() => {
+                      setTimeout(() => setShowLabelDropdown(false), 150);
+                    }}
+                    placeholder="Search or create..."
+                    className="w-full text-sm border border-[#D0D4DC] rounded px-2 py-1.5 focus:outline-none focus:ring-2 focus:ring-[#0066CC]"
+                  />
+                </div>
+                <div>
+                  {filteredLabels.length > 0 ? (
+                    filteredLabels.map(label => (
+                      <button
+                        key={label._id}
+                        onClick={() => handleAddLabel(label)}
+                        className="w-full text-left px-2 py-1.5 text-sm text-[#172B4D] hover:bg-[#F4F5F7] transition"
+                      >
+                        {label.name}
+                      </button>
+                    ))
+                  ) : labelSearch.trim() ? (
+                    <button
+                      onClick={() => handleCreateLabel()}
+                      className="w-full text-left px-2 py-1.5 text-sm text-[#0066CC] hover:bg-[#F4F5F7]"
+                    >
+                      + Create "{labelSearch.trim()}"
+                    </button>
+                  ) : (
+                    <div className="px-2 py-1.5 text-xs text-[#7A8699]">No labels</div>
+                  )}
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Story Points — wired */}
