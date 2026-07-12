@@ -37,6 +37,7 @@ interface CardUpdate {
   assigneeId?: string;
   labelIds?: string[];
   storyPoints?: number | null;
+  listId?: string;
 }
 
 interface CardViewProps {
@@ -117,6 +118,7 @@ export function CardView({
   const [fieldError, setFieldError] = useState<string | null>(null);
   const [commentsRefresh, setCommentsRefresh] = useState(0);
   const [timelogsRefresh, setTimelogsRefresh] = useState(0);
+  const [boardLists, setBoardLists] = useState<{ _id: string; name: string }[]>([]);
   const discardTitleRef = useRef(false);
   const discardDescRef = useRef(false);
   const labelDropdownRef = useRef<HTMLDivElement>(null);
@@ -148,6 +150,21 @@ export function CardView({
     };
     fetchLabels();
   }, []);
+
+  useEffect(() => {
+    const fetchBoardLists = async () => {
+      try {
+        const res = await fetch(`/api/boards/${boardId}/lists`);
+        if (res.ok) {
+          const lists = await res.json();
+          setBoardLists(lists);
+        }
+      } catch (err) {
+        console.error('Failed to fetch board lists:', err);
+      }
+    };
+    fetchBoardLists();
+  }, [boardId]);
 
   useEffect(() => {
     if (!showLabelDropdown) return;
@@ -204,6 +221,26 @@ export function CardView({
     const pointValue = value === '' ? null : parseInt(value, 10);
     setStoryPoints(pointValue);
     await saveField({ storyPoints: pointValue }, 'storyPoints');
+  };
+
+  const handleListChange = async (newListId: string) => {
+    if (newListId === card.listId) return;
+    try {
+      const res = await fetch(`/api/cards/${card._id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ listId: newListId }),
+      });
+
+      if (res.ok) {
+        await onUpdate({ listId: newListId });
+      } else {
+        setFieldError('Failed to move card');
+      }
+    } catch (err) {
+      console.error('Failed to move card:', err);
+      setFieldError('Failed to move card');
+    }
   };
 
   const handleAddLabel = async (label: { _id: string; name: string }) => {
@@ -410,10 +447,21 @@ export function CardView({
         {/* Right: Metadata panel */}
         <div className="w-72 flex-shrink-0 flex flex-col min-h-0">
           <div className="flex flex-col gap-3">
-            {/* Placeholder: Status */}
-            <div className="pointer-events-none opacity-40">
+            {/* Status — wired */}
+            <div>
               <h3 className="text-sm font-semibold text-[#172B4D] mb-1">Status</h3>
-              <div className="w-full text-sm text-[#7A8699] bg-[#F4F5F7] rounded px-2 py-1.5">—</div>
+              <select
+                value={card.listId}
+                onChange={(e) => handleListChange(e.target.value)}
+                disabled={saving === 'status'}
+                className="w-full text-sm border border-[#D0D4DC] rounded px-2 py-1.5 focus:outline-none focus:ring-2 focus:ring-[#0066CC] bg-white disabled:opacity-50 cursor-pointer text-[#172B4D]"
+              >
+                {boardLists.map((list) => (
+                  <option key={list._id} value={list._id}>
+                    {list.name}
+                  </option>
+                ))}
+              </select>
             </div>
 
           {/* Assignee — wired */}
