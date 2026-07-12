@@ -20,12 +20,14 @@ interface CommentListProps {
   cardId: string;
   currentUserId: string;
   onCommentDeleted: () => void;
+  editor?: React.ReactNode;
 }
 
 export function CommentList({
   cardId,
   currentUserId,
   onCommentDeleted,
+  editor,
 }: CommentListProps) {
   const [comments, setComments] = useState<Comment[]>([]);
   const [page, setPage] = useState(0);
@@ -166,6 +168,8 @@ export function CommentList({
           </select>
         </div>
       </div>
+
+      {editor && <div>{editor}</div>}
 
       <div className="space-y-3">
         {comments.map(comment => (
