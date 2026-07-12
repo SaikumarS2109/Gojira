@@ -378,7 +378,7 @@ export function CardView({
         </div>
 
         {/* Right: Metadata panel */}
-        <div className="w-72 flex-shrink-0 flex flex-col gap-3 min-h-0">
+        <div className="w-72 flex-shrink-0 flex flex-col min-h-0">
           <div className="flex flex-col gap-3">
             {/* Placeholder: Status */}
             <div className="pointer-events-none opacity-40">
