@@ -326,9 +326,9 @@ export function CardView({
           <div className="mb-2 flex">
             { titleComponent() }
           </div>
-          <p className="text-xs font-semibold text-[#7A8699] uppercase tracking-wider">
+          <h3 className="text-sm font-semibold text-[#172B4D]">
             Acceptance Criteria
-          </p>
+          </h3>
           {editingDescription ? (
             <RichTextEditor
               value={descriptionValue}
@@ -358,9 +358,9 @@ export function CardView({
 
           {/* Comments Section */}
           <div className="mt-8">
-            <p className="text-xs font-semibold text-[#7A8699] uppercase tracking-wider mb-2 block">
+            <h3 className="text-sm font-semibold text-[#172B4D] mb-2">
               Comments
-            </p>
+            </h3>
             <CommentEditor
               cardId={card._id}
               boardMembers={boardMembers}
@@ -382,13 +382,13 @@ export function CardView({
           <div className="flex flex-col gap-3">
             {/* Placeholder: Status */}
             <div className="pointer-events-none opacity-40">
-              <p className="text-xs font-semibold text-[#7A8699] uppercase tracking-wider mb-1">Status</p>
+              <h3 className="text-sm font-semibold text-[#172B4D] mb-1">Status</h3>
               <div className="w-full text-sm text-[#7A8699] bg-[#F4F5F7] rounded px-2 py-1.5">—</div>
             </div>
 
           {/* Assignee — wired */}
           <div>
-            <p className="text-xs font-semibold text-[#7A8699] uppercase tracking-wider mb-1">Assignee</p>
+            <h3 className="text-sm font-semibold text-[#172B4D] mb-1">Assignee</h3>
             <select
               value={assigneeId}
               onChange={(e) => handleAssigneeChange(e.target.value)}
@@ -406,7 +406,7 @@ export function CardView({
 
           {/* Labels — wired */}
           <div className="relative" ref={labelDropdownRef}>
-            <p className="text-xs font-semibold text-[#7A8699] uppercase tracking-wider mb-1">Labels</p>
+            <h3 className="text-sm font-semibold text-[#172B4D] mb-1">Labels</h3>
 
             {/* Selected labels as chips + add button */}
             <div className="flex flex-wrap gap-1 items-center">
@@ -493,7 +493,7 @@ export function CardView({
 
           {/* Story Points — wired */}
           <div>
-            <p className="text-xs font-semibold text-[#7A8699] uppercase tracking-wider mb-1">Story Points</p>
+            <h3 className="text-sm font-semibold text-[#172B4D] mb-1">Story Points</h3>
             <select
               value={storyPoints ?? ''}
               onChange={(e) => handleStoryPointsChange(e.target.value)}
@@ -513,21 +513,15 @@ export function CardView({
 
           {/* Placeholder: Time Logging */}
           <div className="pointer-events-none opacity-40">
-            <p className="text-xs font-semibold text-[#7A8699] uppercase tracking-wider mb-1">Time Logging</p>
+            <h3 className="text-sm font-semibold text-[#172B4D] mb-1">Time Logging</h3>
             <div className="w-full text-sm text-[#7A8699] bg-[#F4F5F7] rounded px-2 py-1.5">—</div>
           </div>
 
           {/* Placeholder: Card Type */}
           <div className="pointer-events-none opacity-40">
-            <p className="text-xs font-semibold text-[#7A8699] uppercase tracking-wider mb-1">Card Type</p>
+            <h3 className="text-sm font-semibold text-[#172B4D] mb-1">Card Type</h3>
             <div className="w-full text-sm text-[#7A8699] bg-[#F4F5F7] rounded px-2 py-1.5">—</div>
           </div>
-
-          </div>
-
-          {fieldError && (
-            <p className="text-xs text-[#D93025]">{fieldError}</p>
-          )}
 
           {/* Delete */}
           <button
@@ -536,6 +530,14 @@ export function CardView({
           >
             Delete card
           </button>
+
+          </div>
+
+          {fieldError && (
+            <p className="text-xs text-[#D93025]">{fieldError}</p>
+          )}
+
+          
         </div>
       </div>
     </div>
