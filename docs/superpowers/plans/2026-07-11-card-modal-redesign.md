@@ -320,15 +320,6 @@ export function CardView({
             </div>
           )}
 
-          {/* Comments placeholder */}
-          <div className="mt-8">
-            <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">
-              Comments
-            </p>
-            <div className="bg-gray-50 border border-dashed border-gray-200 rounded-lg p-4 text-sm text-gray-400 text-center">
-              Coming soon
-            </div>
-          </div>
         </div>
 
         {/* Right: Metadata panel */}

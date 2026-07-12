@@ -56,15 +56,16 @@ export function TimeLogEditor({ cardId, onTimeLogCreated }: TimeLogEditorProps) 
 
   React.useEffect(() => {
     if (isOpen) {
+      const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
       document.body.style.overflow = 'hidden';
-      document.documentElement.style.overflow = 'hidden';
+      document.body.style.paddingRight = `${scrollbarWidth}px`;
     } else {
       document.body.style.overflow = '';
-      document.documentElement.style.overflow = '';
+      document.body.style.paddingRight = '';
     }
     return () => {
       document.body.style.overflow = '';
-      document.documentElement.style.overflow = '';
+      document.body.style.paddingRight = '';
     };
   }, [isOpen]);
 
@@ -81,7 +82,7 @@ export function TimeLogEditor({ cardId, onTimeLogCreated }: TimeLogEditorProps) 
 
   return (
     <>
-      <div className="fixed inset-0 bg-black/10 z-40" onClick={handleClose} />
+      <div className="fixed inset-0 bg-black/40 z-40" onClick={handleClose} />
       <div className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white rounded-lg shadow-md z-50 w-96 max-h-[90vh] overflow-y-auto">
         <div className="p-4 border-b border-[#E8EAED]">
           <h2 className="text-sm font-semibold text-[#172B4D]">Add Work Log</h2>

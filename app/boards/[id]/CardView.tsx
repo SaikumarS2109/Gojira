@@ -118,7 +118,7 @@ export function CardView({
   const [fieldError, setFieldError] = useState<string | null>(null);
   const [commentsRefresh, setCommentsRefresh] = useState(0);
   const [timelogsRefresh, setTimelogsRefresh] = useState(0);
-  const [boardLists, setBoardLists] = useState<{ _id: string; name: string }[]>([]);
+  const [boardLists, setBoardLists] = useState<{ _id: string; title: string }[]>([]);
   const [showStatusDropdown, setShowStatusDropdown] = useState(false);
   const discardTitleRef = useRef(false);
   const discardDescRef = useRef(false);
@@ -446,8 +446,8 @@ export function CardView({
         </div>
 
         {/* Right: Metadata panel */}
-        <div className="w-72 flex-shrink-0 flex flex-col min-h-0">
-          <div className="flex flex-col gap-3">
+        <div className="w-72 flex-shrink-0 flex flex-col min-h-0 overflow-visible">
+          <div className="flex flex-col gap-3 overflow-visible">
             {/* Status — wired */}
             <div className="relative">
               <button
@@ -456,13 +456,13 @@ export function CardView({
                 disabled={saving === 'status'}
               >
                 <span>
-                  {boardLists.find(l => l._id === card.listId)?.name || 'Select Status'}
+                  {boardLists.find(l => l._id === card.listId)?.title || 'Select Status'}
                 </span>
                 <span>▼</span>
               </button>
               {showStatusDropdown && (
                 <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-[#D0D4DC] rounded shadow-lg z-50 w-full">
-                  {boardLists.map((list) => (
+                  {boardLists.filter(l => l._id !== card.listId).map((list) => (
                     <button
                       key={list._id}
                       onClick={() => {
@@ -471,7 +471,7 @@ export function CardView({
                       }}
                       className="w-full text-left px-3 py-3 text-sm text-[#172B4D] hover:bg-[#F4F5F7] transition block border-b border-[#E8EAED] last:border-b-0"
                     >
-                      {list.name}
+                      {list.title}
                     </button>
                   ))}
                 </div>
