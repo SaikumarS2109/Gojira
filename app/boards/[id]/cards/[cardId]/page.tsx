@@ -18,6 +18,7 @@ interface Board {
   title: string;
   sequencePrefix?: string;
   memberIds?: User[];
+  enabledCardTypes?: string[];
 }
 
 interface Card {

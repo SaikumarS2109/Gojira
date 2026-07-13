@@ -10,6 +10,7 @@ interface Board {
   _id: string;
   title: string;
   ownerId: { name: string };
+  enabledCardTypes?: string[];
 }
 
 const BOARD_COLORS = [

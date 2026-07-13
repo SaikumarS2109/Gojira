@@ -17,6 +17,7 @@ interface AdminUser {
 interface Board {
   _id: string;
   title: string;
+  enabledCardTypes?: string[];
 }
 
 function getInitials(name: string) {

@@ -23,6 +23,7 @@ interface Board {
   sequencePrefix?: string;
   memberIds?: User[];
   ownerId?: User;
+  enabledCardTypes?: string[];
 }
 
 interface List {

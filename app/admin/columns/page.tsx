@@ -29,6 +29,7 @@ import { CSS } from '@dnd-kit/utilities';
 interface Board {
   _id: string;
   title: string;
+  enabledCardTypes?: string[];
 }
 
 interface List {
