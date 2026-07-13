@@ -9,6 +9,7 @@ import { SimpleDragDrop } from './SimpleDragDrop';
 import { DraggableList } from './DraggableList';
 import { CardTypeSelector } from '@/components/CardTypeSelector';
 import { CardType, CARD_TYPE_LIST } from '@/lib/cardTypes';
+import { Loader } from '@/components/Loader';
 import Link from 'next/link';
 
 interface User {
@@ -284,9 +285,7 @@ export default function BoardDetailPage() {
   if (loading) {
     return (
       <AuthGuard>
-        <div className="h-screen flex items-center justify-center bg-[#F4F5F7]">
-          <div className="text-[#7A8699]">Loading...</div>
-        </div>
+        <Loader fullScreen />
       </AuthGuard>
     );
   }

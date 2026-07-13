@@ -5,6 +5,7 @@ import { useParams, useRouter } from 'next/navigation';
 import { useSession, signOut } from 'next-auth/react';
 import { AuthGuard } from '@/components/AuthGuard';
 import { CardView } from '../../CardView';
+import { Loader } from '@/components/Loader';
 import Link from 'next/link';
 
 interface User {
@@ -136,9 +137,7 @@ export default function CardFullPage() {
   if (loading) {
     return (
       <AuthGuard>
-        <div className="h-screen flex items-center justify-center bg-[#F4F5F7]">
-          <div className="text-[#7A8699]">Loading...</div>
-        </div>
+        <Loader fullScreen />
       </AuthGuard>
     );
   }

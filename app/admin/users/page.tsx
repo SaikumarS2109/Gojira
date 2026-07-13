@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { usePathname } from 'next/navigation';
 import { AuthGuard } from '@/components/AuthGuard';
+import { Loader } from '@/components/Loader';
 
 interface AdminUser {
   _id: string;
@@ -192,7 +193,7 @@ export default function AdminUsersPage() {
               )}
 
               {loading ? (
-                <p className="text-sm text-[#7A8699]">Loading...</p>
+                <Loader />
               ) : (
                 <div className="bg-white border border-[#E0E3E8] rounded-lg overflow-hidden">
                   <table className="w-full text-sm">
