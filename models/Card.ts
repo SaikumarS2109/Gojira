@@ -53,7 +53,7 @@ const cardSchema = new mongoose.Schema(
     type: {
       type: String,
       enum: ['Epic', 'Story', 'Subtask', 'Task', 'Bug'],
-      required: true,
+      default: 'Story',
     },
   },
   { timestamps: true }

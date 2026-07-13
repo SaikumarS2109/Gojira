@@ -16,8 +16,8 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const { listId, title, description, type } = body;
 
-    if (!listId || !title || !type) {
-      return NextResponse.json({ error: 'listId, title, and type are required' }, { status: 400 });
+    if (!listId || !title) {
+      return NextResponse.json({ error: 'listId and title are required' }, { status: 400 });
     }
 
     await connectDB();
