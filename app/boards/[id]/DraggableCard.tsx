@@ -40,12 +40,12 @@ export function DraggableCard({ card, onCardClick, sequencePrefix }: DraggableCa
       {...listeners}
       {...attributes}
       onClick={(e) => { e.stopPropagation(); onCardClick(card); }}
-      className={`bg-white rounded-md shadow-sm border border-[#E0E3E8] px-3 py-2 cursor-pointer hover:shadow-md hover:border-[#0066CC] transition group ${
+      className={`bg-white rounded-md shadow-sm border border-[#E0E3E8] px-3 py-3 cursor-pointer hover:shadow-md hover:border-[#0066CC] transition group ${
         isDragging ? 'opacity-0' : 'opacity-100'
       }`}
     >
       {ticketId && (
-        <div className="flex items-center gap-1 mb-1">
+        <div className="flex items-center gap-1 mb-2">
           {card.type && (
             <Image
               src={CARD_TYPE_ICONS[card.type]}
@@ -60,18 +60,15 @@ export function DraggableCard({ card, onCardClick, sequencePrefix }: DraggableCa
       )}
       <p className="text-sm text-[#172B4D] font-medium leading-snug">{card.title}</p>
 
-      {card.assigneeId && (
-        <div className="flex items-center gap-1 mt-2">
-          <div className="w-5 h-5 rounded-full bg-[#0066CC] text-white text-xs flex items-center justify-center font-bold">
+      <div className="flex items-center justify-between mt-3">
+        {card.assigneeId ? (
+          <div className="w-5 h-5 rounded-full bg-[#0066CC] text-white text-xs flex items-center justify-center font-bold flex-shrink-0">
             {getInitials(card.assigneeId.name)}
           </div>
-          <span className="text-xs text-[#42526E]">{card.assigneeId.name}</span>
-        </div>
-      )}
-
-      {/* Story Points badge */}
-      <div className="flex items-center mt-2 text-xs text-[#7A8699]">
-        <span className="font-semibold text-[#172B4D] bg-gray-100 px-1">{card.storyPoints ?? "-"}</span>
+        ) : (
+          <span />
+        )}
+        <span className="font-semibold text-[#172B4D] bg-gray-100 px-1 text-xs">{card.storyPoints ?? '-'}</span>
       </div>
     </div>
   );
