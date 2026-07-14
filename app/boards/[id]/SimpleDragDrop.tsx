@@ -128,7 +128,7 @@ export function SimpleDragDrop({
     >
       {children(lists, localCards, draggingCard?._id ?? null)}
 
-      <DragOverlay>
+      <DragOverlay dropAnimation={null}>
         {draggingCard ? (
           <div className="opacity-95 cursor-grabbing rotate-1 shadow-xl">
             <DraggableCard
