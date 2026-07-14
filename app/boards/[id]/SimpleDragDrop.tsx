@@ -11,12 +11,17 @@ import {
   useSensors,
 } from '@dnd-kit/core';
 import { useState, useEffect } from 'react';
+import { DraggableCard } from './DraggableCard';
+import { CardType } from '@/lib/cardTypes';
 
 interface Card {
   _id: string;
   title: string;
   description: string;
   listId: string;
+  ticketNumber?: number;
+  type?: CardType;
+  storyPoints?: number;
   assigneeId?: { _id: string; name: string; email: string };
 }
 
@@ -30,6 +35,7 @@ interface SimpleDragDropProps {
   lists: List[];
   cards: Record<string, Card[]>;
   onCardMove: (cardId: string, newListId: string) => Promise<void>;
+  sequencePrefix: string;
   children: (
     lists: List[],
     cards: Record<string, Card[]>,
@@ -41,6 +47,7 @@ export function SimpleDragDrop({
   lists,
   cards,
   onCardMove,
+  sequencePrefix,
   children,
 }: SimpleDragDropProps) {
   const [localCards, setLocalCards] = useState(cards);
@@ -121,21 +128,14 @@ export function SimpleDragDrop({
     >
       {children(lists, localCards, draggingCard?._id ?? null)}
 
-      {/* DragOverlay renders floating card at correct size */}
       <DragOverlay>
         {draggingCard ? (
-          <div className="bg-gray-50 p-3 rounded border border-blue-400 shadow-xl opacity-95 cursor-grabbing">
-            <p className="font-medium text-sm">{draggingCard.title}</p>
-            {draggingCard.description && (
-              <p className="text-xs text-gray-600 mt-1 line-clamp-2">
-                {draggingCard.description}
-              </p>
-            )}
-            {draggingCard.assigneeId && (
-              <p className="text-xs text-blue-600 mt-1">
-                Assigned to {draggingCard.assigneeId.name}
-              </p>
-            )}
+          <div className="opacity-95 cursor-grabbing rotate-1 shadow-xl">
+            <DraggableCard
+              card={draggingCard}
+              onCardClick={() => {}}
+              sequencePrefix={sequencePrefix}
+            />
           </div>
         ) : null}
       </DragOverlay>

@@ -487,7 +487,7 @@ export default function BoardDetailPage() {
 
             {/* Kanban */}
             <div className="flex-1 overflow-x-auto px-5 pb-4">
-              <SimpleDragDrop lists={lists} cards={cards} onCardMove={handleCardMove}>
+              <SimpleDragDrop lists={lists} cards={cards} onCardMove={handleCardMove} sequencePrefix={board?.sequencePrefix || ''}>
                 {(dragLists, dragCards, draggingCardId) => (
                   <div className="flex gap-3 items-start h-full">
                     {dragLists.map((list) => (
